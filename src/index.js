@@ -2,13 +2,12 @@ const express = require("express")
 require('./db/mongoose')
 const cors = require("cors")
 const path = require("path")
-const userRouter = require("./routers/user")
-const categoriesRouter = require("./routers/categories")
-const boutiqueRouter = require("./routers/boutique")
-const productRouter = require("./routers/product")
-const panierRouter = require("./routers/panier")
-const commandRouter = require("./routers/command")
-const addressRouter = require("./routers/address")
+const clientTRouter = require("./routers/clientType")
+const forfait = require("./routers/forfait")
+const boiteType = require("./routers/boiteType")
+const boite = require("./routers/boite")
+const client = require("./routers/client")
+
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -23,13 +22,11 @@ const imagesPath = path.join(__dirname, '../images')
 
 app.use('/images',express.static(imagesPath))
 app.use(express.json())
-app.use(userRouter)
-app.use(categoriesRouter)
-app.use(productRouter)
-app.use(boutiqueRouter)
-app.use(panierRouter)
-app.use(commandRouter)
-app.use(addressRouter)
+app.use(clientTRouter)
+app.use(forfait)
+app.use(boiteType)
+app.use(boite)
+app.use(client)
 
 app.listen(port, () => {
   console.log('Server is up on port ' + port);
