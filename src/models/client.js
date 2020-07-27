@@ -36,7 +36,15 @@ const clientSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
      //   required: true
     },
+    idBoite: {
+        type: mongoose.Schema.Types.ObjectId,
+     //   required: true
+    },
     boiteNumber: {
+        type: String,
+     //   required: true
+    },
+    clientType: {
         type: String,
      //   required: true
     },

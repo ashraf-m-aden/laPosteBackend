@@ -1,7 +1,7 @@
 const express = require("express")
 const router = new express.Router()
 const Client = require("../models/client")
-const BGP = require("../models/clients")
+const CB = require("../models/clientBoite")
 const auth = require('../middleware/auth')
 
 router.post('/client', auth, async (req, res) => {
@@ -17,12 +17,13 @@ router.post('/clients', async (req, res) => {
     const clients = await Client.find({})
     try {
         clients.forEach(async element => {
-            const boite = await BGP.findOne({Nomcl:element.name})
-            if (element.name = boite.Nomcl) {
-            }
-            if (boite) {
-                element.boiteNumber = boite.Nbp
-                await element.save()           }
+            const cb = await new CB({idBoite:element.idBoite, idClient: element._id, boiteNumber: element.boiteNumber, clientName: element.name});
+
+            // cb.idBoite = element.idBoite
+            // cb.idClient = element._id
+            // cb.boiteNumber = element.boiteNumber
+            // cb.clientName = element.name
+            await cb.save()  
 
         });
         return res.status(201).send(client)
@@ -71,10 +72,8 @@ router.delete('/client/:id',auth,async(req,res)=>{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.get('/client/:id', async (req, res) => {  // get one client
-    console.log(req);
     try {
         const client = await Client.findById({ _id: req.params.id })
-        console.log(req.id);
         if (!client) {
             return res.status(404).send('Client inexistant')
         }
@@ -92,6 +91,37 @@ router.get('/clients', async (req, res) => {  // get All client
         res.status(200).send(clients)
     } catch (error) {
         res.status(500).send('Problem de serveur')
+    }
+})
+router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one client
+    try {
+        const client = await CB.find({ idClient: req.params.id })
+        if (!client) {
+            return res.status(404).send('Client inexistant')
+        }
+        res.status(200).send(client)
+    } catch (error) {
+        res.status(500).send('Un problem est survenu veuillez reessayer')
+    }
+})
+router.get('/remove', async (req, res) => {  // get the boxes of one client
+    try {
+        const client = await CB.find({})
+        if (!client) {
+            return res.status(404).send('Client inexistant')
+        }
+        for (let index = 0; index < client.length; index++) {
+            for (let i = 0; i < client.length; i++) {
+                if (client[index].clientName.toString() == client[i].clientName.toString() && client[index]._id.toString()!==client[i]._id.toString() ) {
+                    await client[i].remove()
+                    console.log(index + ' enlevé ' + i);
+                }
+            }
+            
+        }
+        res.status(200).send(client)
+    } catch (error) {
+        res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
     

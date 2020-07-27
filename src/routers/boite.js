@@ -2,8 +2,9 @@ const express = require("express")
 const router = new express.Router()
 const auth = require('../middleware/auth')
 const Boite = require("../models/boite")
-const BGP = require("../models/clients")
-
+const BGP = require("../models/boiteType")
+const BC = require("../models/clientBoite")
+const CL = require("../models/client")
 
 router.post('/boite', auth, async (req, res) => {
     const boite = new boite(req.body)
@@ -16,37 +17,26 @@ router.post('/boite', auth, async (req, res) => {
 })
 
 router.post('/boites', async (req, res) => { //code pour faire migrer la base de données en un coup
-    const boites = await BGP.find({})
-    var allBoites = []
-    try {
-        boites.forEach(async element => {
-            var boite = new Boite()
-            boite.number = element.Nbp
-            switch (element.Code_Cat.toLowerCase()) {
-                case "mo":
-                    boite.idBoiteType = "5f17e01b37824a17b83d07a7"
-                    break;
-                    case "pe":
-                    boite.idBoiteType = "5f17e01437824a17b83d07a6"
-                    break;
-                    case "bl":
-                    boite.idBoiteType = "5f17f0323cc901299856629e"
-                    break;
-                    case "gr":
-                    boite.idBoiteType = "5f17e00d37824a17b83d07a5"
-                    break;
+    const clients = await CL.find({})
+    const boites = await Boite.find({})
 
-            }
-            await boite.save()
-        });
-        return res.status(201).send(allBoites)
+    try {
+        clients.forEach(async client => {
+            const cb = await new BC()
+            cb.boiteNumber = client.boiteNumber
+            cb.clientName = client.name
+            cb.idBoite = client.idBoite
+            cb.idClient = client._id
+            await cb.save()
+            });
+        return res.status(201).send()
     } catch (error) {
         res.status(400).send(error)
     }
 })
 
 router.patch('/boite/:id', auth, async (req, res) => {
-    const boite = Boite.findById({_id:req.id})
+    const boite = await Boite.findById({_id:req.id})
     if (!boite) {
         return res.statut(404).send("La boite n'existe pas")
     }
@@ -80,9 +70,9 @@ router.delete('/boite/:id',auth,async(req,res)=>{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/boite/:id', auth, async (req, res) => {  // get one boite
+router.get('/boite/:id', async (req, res) => {  // get one boite
     try {
-        const boite = await Boite.findById({ _id: req.id })
+        const boite = await Boite.findById({ _id: req.params.id })
         if (!boite) {
             return res.status(404).send('boite inexistant')
         }
@@ -102,5 +92,16 @@ router.get('/boites', async (req, res) => {  // get All boite
         res.status(500).send('Problem de serveur')
     }
 })
-    
+
+router.get('/boiteClient/:id', async (req, res) => {  // get the clients of one box
+    try {
+        const boite = await BC.find({ idBoite: req.params.id })
+        if (!boite) {
+            return res.status(404).send('boite inexistante')
+        }
+        res.status(200).send(boite)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 module.exports = router
