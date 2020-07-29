@@ -2,6 +2,9 @@ const express = require("express")
 const router = new express.Router()
 const Client = require("../models/client")
 const CB = require("../models/clientBoite")
+const PAYES = require("../models/payes")
+const Boites = require("../models/boite")
+const CS = require("../models/clientStatus")
 const auth = require('../middleware/auth')
 
 router.post('/client', auth, async (req, res) => {
@@ -15,20 +18,27 @@ router.post('/client', auth, async (req, res) => {
 })
 router.post('/clients', async (req, res) => {
     const clients = await Client.find({})
-    try {
-        clients.forEach(async element => {
-            const cb = await new CB({idBoite:element.idBoite, idClient: element._id, boiteNumber: element.boiteNumber, clientName: element.name});
+    const payes = await PAYES.find({})
+    const boites = await Boites.find({})
+    const cs = await CS.find({})
+     try {
+        await clients.forEach(async client => {
+  
+            if (client.status ==='A jour') {
+                client.bg = 'background:green'
+            } else if (client.status === 'En retard') {
+                client.bg = 'background:yellow'
+            } else {
+                client.bg = 'background:red'
 
-            // cb.idBoite = element.idBoite
-            // cb.idClient = element._id
-            // cb.boiteNumber = element.boiteNumber
-            // cb.clientName = element.name
-            await cb.save()  
+            }
+            
+            await client.save()  
 
         });
-        return res.status(201).send(client)
+        return res.status(201).send(clients)
     } catch (error) {
-        res.status(400).send(error)
+        res.status(400).send(error.response)
     }
 })
 
@@ -82,7 +92,7 @@ router.get('/client/:id', async (req, res) => {  // get one client
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
-router.get('/clients', async (req, res) => {  // get All client
+router.get('/clients',  async (req, res) => {  // get All client
     try {
         const clients = await Client.find({})
         if (!clients) {

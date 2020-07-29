@@ -3,7 +3,7 @@ const router = new express.Router()
 const Staff = require("../models/staff")
 const auth = require('../middleware/auth')
 
-router.post('/staffs', auth, async (req, res) => {
+router.post('/staff', async (req, res) => {
     const staff = new Staff(req.body)
     try {
         staff.save()
@@ -32,7 +32,7 @@ router.patch('/staff/:id', auth, async (req, res) => {
 })
 
 router.delete('/staff/:id',auth,async(req,res)=>{
-    const staff = staff.findById({_id:req.id})
+    const staff = Staff.findById({_id:req.id})
     if (!staff) {
         return res.statut(404).send("Le staff n'existe pas")
     }
@@ -46,13 +46,35 @@ router.delete('/staff/:id',auth,async(req,res)=>{
     }
 
 })
+
+
+
+router.post('/staff/login', async (req, res) => {
+    try {
+        const staff = await Staff.findByCredentials(req.body.email, req.body.password);
+        const token = await staff.generateToken()
+        return res.status(201).send({ staff, token })
+    } catch (e) {
+        res.status(404).send('Email ou mot de passe erroné')
+    }
+})
+router.post('/staff/logout', auth, async (req, res) => {
+    try {
+        req.staff.tokens = req.staff.tokens.filter((token) => { return token.token !== req.token })
+        await req.staff.save()
+        res.status(201).send()
+    } catch (error) {
+        res.status(404).send(error)
+
+    }
+})
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.get('/staff/:id', auth, async (req, res) => {  // get one staff
     try {
-        const staff = await staff.findById({ _id: req.id })
+        const staff = await Staff.findById({ _id: req.id })
         if (!staff) {
             return res.status(404).send('staff inexistant')
         }
@@ -63,7 +85,7 @@ router.get('/staff/:id', auth, async (req, res) => {  // get one staff
 })
 router.get('/staffs', auth, async (req, res) => {  // get All staff
     try {
-        const staffs = await staff.find({})
+        const staffs = await Staff.find({})
         if (!staffs) {
             return res.status(404).send('Pas de staffs')
         }

@@ -31,13 +31,19 @@ const staffSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 
 },
     { timestamps: true })
 
-// verify credentials, this a function we use on staff and not on staff
+// verify credentials, this a function we use on Staff and not on staff
 staffSchema.statics.findByCredentials = async (email, password) => {
-    const staff = await staff.findOne({ email })
+    const staff = await Staff.findOne({ email })
     if (!staff) {
         throw new Error('Connexion refusée')
     }
@@ -49,7 +55,7 @@ staffSchema.statics.findByCredentials = async (email, password) => {
 }
 
 staffSchema.statics.isAdmin = async (email, password) => {
-    const staff = await staff.findOne({ email })
+    const staff = await Staff.findOne({ email })
     if (!staff) {
         throw new Error('Connexion refusée')
     }
@@ -67,12 +73,11 @@ staffSchema.statics.isAdmin = async (email, password) => {
 staffSchema.methods.generateToken = async function () {
     const staff = this
     try {
-        const token = jwt.sign({ _id: staff._id.toString() }, 'laIlaahaIlaAllah')
-        while (staff.tokens.length > 1) {
-            staff.tokens.shift()
+        const token = await jwt.sign({ _id: staff._id.toString() }, process.env.jwt_secret)
+        while (staff.tokens.length >= 1) {
+            await staff.tokens.shift()
         }
-
-        staff.tokens = staff.tokens.concat({ token })
+        staff.tokens = await staff.tokens.concat({ token })
         await staff.save()
         return token
     } catch (e) {

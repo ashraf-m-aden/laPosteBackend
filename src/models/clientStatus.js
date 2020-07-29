@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const staffTypeSchema = new mongoose.Schema({
+const clientStatusSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Why no values? Always provide values!'],
@@ -8,22 +8,14 @@ const staffTypeSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Why no values? Always provide values!'],
     },
-    isSuperviseur: {
-        type: Boolean,
-        default: false
-    },
-    hasPower: {
-        type: Boolean,
-        default: false
-    },
     enabled: {
         type: Boolean,
         default: true
     }
 },
-{timestamps: true})
+    { timestamps: true })
 
 
-const StaffType = mongoose.model('StaffTypes', staffTypeSchema)
+const ClientStatus = mongoose.model('clientStatus', clientStatusSchema)
 
-module.exports = StaffType
+module.exports = ClientStatus

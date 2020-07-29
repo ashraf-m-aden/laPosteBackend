@@ -1,17 +1,16 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/staff')
+const Staff = require('../models/staff')
 const auth = async (req, res, next) => {
     
     try {
         const token = req.header('Authorization').replace('Bearer ', '')
         const decoded = jwt.verify(token, process.env.jwt_secret)        
-        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })        
-        if (!user) {
+        const staff = await Staff.findOne({ _id: decoded._id, 'tokens.token': token })     
+        if (!staff) {
             throw new Error()
         }
-        req.user = user
+        req.staff = staff
         req.token = token
-        
         next()
 
     } catch (error) {

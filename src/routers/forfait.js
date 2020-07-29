@@ -29,7 +29,7 @@ router.post('/forfait/:id', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/forfait', async (req, res) => {
+router.get('/forfaits', async (req, res) => {
     
     try {
         const forfaits = await Forfait.find({})

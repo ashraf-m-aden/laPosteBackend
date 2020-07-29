@@ -5,28 +5,28 @@ const jwt = require('jsonwebtoken')
 const clientSchema = new mongoose.Schema({
     name: {
         type: String,
-     //   required: true
+        //required: true
     },
     address: {
         type: String,
-     //   required: true
+        //required: true
     },
     number: {
-        type: Number,
-     //   required: true
+        type: String,
+        //required: true
     },
-    // email: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    //     lowerCase: true,
-    //     unique: true, // le faire au tout debut sinn il faudra supprimer toute la base pour que cela fonctionne
-    //     validate(value) {
-    //         if (!validator.isEmail(value)) {
-    //             throw new Error('L\'email est invalide')
-    //         }
-    //     }
-    // },
+    email: {
+        type: String,
+        // required: true,
+        trim: true,
+        lowerCase: true,
+        unique: true, // le faire au tout debut sinn il faudra supprimer toute la base pour que cela fonctionne
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error('L\'email est invalide')
+            }
+        }
+    },
 
     enabled: {
         type: Boolean,
@@ -34,20 +34,34 @@ const clientSchema = new mongoose.Schema({
     },
     idClientType: {
         type: mongoose.Schema.Types.ObjectId,
-     //   required: true
+        //required: true
     },
     idBoite: {
         type: mongoose.Schema.Types.ObjectId,
-     //   required: true
+        //required: true
     },
     boiteNumber: {
         type: String,
-     //   required: true
+        //required: true
     },
     clientType: {
         type: String,
-     //   required: true
+        //required: true
     },
+    identityNumber: {
+        type: String,
+        //required: true
+    },
+    status: {
+        type: String
+    },
+    bg: {
+        type: String
+    },
+    idStatus: {
+        type: mongoose.Schema.Types.ObjectId
+    },
+
 
 },
     { timestamps: true })

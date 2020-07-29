@@ -92,6 +92,17 @@ router.get('/boites', async (req, res) => {  // get All boite
         res.status(500).send('Problem de serveur')
     }
 })
+router.get('/Aboites', async (req, res) => {  // get All boite
+    try {
+        const boites = await Boite.find({enabled: true})
+        if (!boites) {
+            return res.status(404).send('Pas de boites')
+        }
+        res.status(200).send(boites)
+    } catch (error) {
+        res.status(500).send('Problem de serveur')
+    }
+})
 
 router.get('/boiteClient/:id', async (req, res) => {  // get the clients of one box
     try {

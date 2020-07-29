@@ -8,10 +8,12 @@ const clientTypeSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Why no values? Always provide values!'],
     },
-    idTypeBoite: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
+    idBoitetypes: [{
+        idBoiteType: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    }],
     forfaits: [{
         idForfait: {
         type: mongoose.Schema.Types.ObjectId,
