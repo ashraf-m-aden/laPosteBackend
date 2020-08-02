@@ -12,12 +12,18 @@ const clientTypeSchema = new mongoose.Schema({
         idBoiteType: {
             type: mongoose.Schema.Types.ObjectId,
             required: true
+        },
+        price: {
+            type: Number
         }
     }],
     forfaits: [{
         idForfait: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        //required: true
+        },
+        price: {
+            type: Number
         }
     }],
     enabled: {

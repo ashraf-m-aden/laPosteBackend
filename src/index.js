@@ -9,6 +9,7 @@ const boite = require("./routers/boite")
 const client = require("./routers/client")
 const staff = require("./routers/staff")
 const staffT = require("./routers/staffType")
+const historicPys = require("./routers/historiquePaiements")
 
 
 const app = express()
@@ -31,6 +32,7 @@ app.use(boite)
 app.use(client)
 app.use(staff)
 app.use(staffT)
+app.use(historicPys)
 
 app.listen(port, () => {
   console.log('Server is up on port ' + port);

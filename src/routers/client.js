@@ -6,6 +6,7 @@ const PAYES = require("../models/payes")
 const Boites = require("../models/boite")
 const CS = require("../models/clientStatus")
 const auth = require('../middleware/auth')
+const HF = require("../models/historiqueForfait")
 
 router.post('/client', auth, async (req, res) => {
     const client = new Client(req.body)
@@ -103,6 +104,7 @@ router.get('/clients',  async (req, res) => {  // get All client
         res.status(500).send('Problem de serveur')
     }
 })
+
 router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one client
     try {
         const client = await CB.find({ idClient: req.params.id })
@@ -116,13 +118,13 @@ router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one cl
 })
 router.get('/remove', async (req, res) => {  // get the boxes of one client
     try {
-        const client = await CB.find({})
+        const client = await Client.find({})
         if (!client) {
             return res.status(404).send('Client inexistant')
         }
         for (let index = 0; index < client.length; index++) {
             for (let i = 0; i < client.length; i++) {
-                if (client[index].clientName.toString() == client[i].clientName.toString() && client[index]._id.toString()!==client[i]._id.toString() ) {
+                if (client[index].name.toString() == client[i].name.toString() && client[index]._id.toString()!==client[i]._id.toString() ) {
                     await client[i].remove()
                     console.log(index + ' enlevé ' + i);
                 }

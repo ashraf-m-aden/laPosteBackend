@@ -1,14 +1,16 @@
 const mongoose = require('mongoose')
-const boiteSchema = new mongoose.Schema({
+const hfSchema = new mongoose.Schema({
 
     idClient: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    idForfait: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
+    forfaits: [{
+        idForfait: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        }
+    }],
     idBoite: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
@@ -25,6 +27,6 @@ const boiteSchema = new mongoose.Schema({
 {timestamps: true})
 
 
-const Boite = mongoose.model('Boite', boiteSchema)
+const HF = mongoose.model('historiqueforfaits', hfSchema)
 
-module.exports = Boite
+module.exports = HF
