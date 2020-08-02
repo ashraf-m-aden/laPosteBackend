@@ -103,6 +103,15 @@ router.get('/forfaits', async (req, res) => {
         return res.status(404).send(error)
     }
 })
+router.get('/forfaitClientT', async (req, res) => {
+
+    try {
+        const forfaits = await Forfait.find({})
+        return res.status(201).send(forfaits)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
 
 router.get('/clientForfait/:id', async (req, res) => {
     const forfaitsClient = []

@@ -79,5 +79,16 @@ router.get('/ClientT', async (req, res) => {
         return res.status(404).send(error)
     }
 })
+router.get('/ClientT/:id', async (req, res) => {
+
+    try {
+        const clientT = await ClientType.findById({ _id: req.params.id })
+        
+        return res.status(201).send(clientT)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
 
 module.exports = router
