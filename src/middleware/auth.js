@@ -3,7 +3,7 @@ const Staff = require('../models/staff')
 const auth = async (req, res, next) => {
     
     try {
-        const token = req.header('Authorization').replace('Bearer ', '')
+        const token = req.headers.authorization
         const decoded = jwt.verify(token, process.env.jwt_secret)        
         const staff = await Staff.findOne({ _id: decoded._id, 'tokens.token': token })     
         if (!staff) {

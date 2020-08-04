@@ -9,13 +9,8 @@ const auth = require('../middleware/auth')
 const Forfaits = require('../models/forfait')
 
 router.post('/historicP', auth, async (req, res) => {
-    const clientB = await clientB.find({})
-
-    const hp = await new HistoricP(req.body)
     try {
-        clientB.forEach(client => {
-
-        });
+        const hp = await new HistoricP(req.body)
         await hp.save()
         return res.status(201).send(hp)
     } catch (error) {

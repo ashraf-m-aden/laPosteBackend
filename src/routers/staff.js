@@ -3,7 +3,7 @@ const router = new express.Router()
 const Staff = require("../models/staff")
 const auth = require('../middleware/auth')
 
-router.post('/staff', async (req, res) => {
+router.post('/staff',auth, async (req, res) => {
     const staff = new Staff(req.body)
     try {
         staff.save()
@@ -47,8 +47,6 @@ router.delete('/staff/:id',auth,async(req,res)=>{
 
 })
 
-
-
 router.post('/staff/login', async (req, res) => {
     try {
         const staff = await Staff.findByCredentials(req.body.email, req.body.password);
@@ -58,7 +56,7 @@ router.post('/staff/login', async (req, res) => {
         res.status(404).send('Email ou mot de passe erroné')
     }
 })
-router.post('/staff/logout', auth, async (req, res) => {
+router.get('/staff/logout', auth, async (req, res) => {
     try {
         req.staff.tokens = req.staff.tokens.filter((token) => { return token.token !== req.token })
         await req.staff.save()

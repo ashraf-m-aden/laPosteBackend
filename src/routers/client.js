@@ -7,8 +7,9 @@ const Boites = require("../models/boite")
 const CS = require("../models/clientStatus")
 const auth = require('../middleware/auth')
 const HF = require("../models/historiqueForfait")
+const HP = require("../models/historiquePaiements")
 
-router.post('/client', auth, async (req, res) => {
+router.post('/client', auth, auth, async (req, res) => {
     const client = new Client(req.body)
     try {
         client.save()
@@ -17,15 +18,15 @@ router.post('/client', auth, async (req, res) => {
         res.status(400).send(error)
     }
 })
-router.post('/clients', async (req, res) => {
+router.post('/clients', auth, async (req, res) => {
     const clients = await Client.find({})
     const payes = await PAYES.find({})
     const boites = await Boites.find({})
     const cs = await CS.find({})
-     try {
-        await clients.forEach(async client => {
-  
-            if (client.status ==='A jour') {
+    try {
+        await clients.forEach(auth, async client => {
+
+            if (client.status === 'A jour') {
                 client.bg = 'background:green'
             } else if (client.status === 'En retard') {
                 client.bg = 'background:yellow'
@@ -33,8 +34,8 @@ router.post('/clients', async (req, res) => {
                 client.bg = 'background:red'
 
             }
-            
-            await client.save()  
+
+            await client.save()
 
         });
         return res.status(201).send(clients)
@@ -43,8 +44,8 @@ router.post('/clients', async (req, res) => {
     }
 })
 
-router.patch('/client/:id', auth, async (req, res) => {
-    const client = Client.findById({_id:req.id})
+router.patch('/client/:id', auth, auth, async (req, res) => {
+    const client = Client.findById({ _id: req.id })
     if (!client) {
         return res.statut(404).send("Le client n'existe pas")
     }
@@ -63,14 +64,14 @@ router.patch('/client/:id', auth, async (req, res) => {
     }
 })
 
-router.delete('/client/:id',auth,async(req,res)=>{
-    const client = Client.findById({_id:req.id})
+router.delete('/client/:id', auth, auth, async (req, res) => {
+    const client = Client.findById({ _id: req.id })
     if (!client) {
         return res.statut(404).send("Le client n'existe pas")
     }
     try {
         client.enabled = !client.enabled  // j'active ou desactive le client
-        client.save()  
+        client.save()
         res.status(201).send(client)
 
     } catch (error) {
@@ -82,7 +83,7 @@ router.delete('/client/:id',auth,async(req,res)=>{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/client/:id', async (req, res) => {  // get one client
+router.get('/client/:id', auth, async (req, res) => {  // get one client
     try {
         const client = await Client.findById({ _id: req.params.id })
         if (!client) {
@@ -93,9 +94,9 @@ router.get('/client/:id', async (req, res) => {  // get one client
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
-router.get('/clients',  async (req, res) => {  // get All client
+router.get('/clients', auth, async (req, res) => {  // get All client
     try {
-        const clients = await Client.find({})
+        const clients = await Client.find({ enabled: true })
         if (!clients) {
             return res.status(404).send('Pas de clients')
         }
@@ -105,7 +106,7 @@ router.get('/clients',  async (req, res) => {  // get All client
     }
 })
 
-router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one client
+router.get('/clientBoite/:id', auth, async (req, res) => {  // get the boxes of one client
     try {
         const client = await CB.find({ idClient: req.params.id })
         if (!client) {
@@ -118,23 +119,27 @@ router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one cl
 })
 router.get('/remove', async (req, res) => {  // get the boxes of one client
     try {
-        const client = await Client.find({})
-        if (!client) {
+        const clients = await Client.find({ name: 'Ashraf Mohamed' })
+        if (!clients) {
             return res.status(404).send('Client inexistant')
         }
-        for (let index = 0; index < client.length; index++) {
-            for (let i = 0; i < client.length; i++) {
-                if (client[index].name.toString() == client[i].name.toString() && client[index]._id.toString()!==client[i]._id.toString() ) {
-                    await client[i].remove()
-                    console.log(index + ' enlevé ' + i);
-                }
+        clients.forEach(async client => {
+            const hfs = await HF.findOne({ idClient: client._id })
+            const hps = await HP.findOne({ idClient: client._id })
+            if (hfs) {
+                await hfs.remove()
+
             }
-            
-        }
-        res.status(200).send(client)
+            if (hps) {
+                await hps.remove()
+
+            }
+            await client.remove()
+        });
+        res.status(200).send(clients)
     } catch (error) {
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
-    
+
 module.exports = router

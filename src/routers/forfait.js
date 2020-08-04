@@ -7,7 +7,7 @@ const auth = require('../middleware/auth')
 const Paye = require('../models/payes')
 const Imp = require('../models/impayes')
 const Retard = require('../models/retard')
-router.post('/forfait', async (req, res) => { //creer un forfait
+router.post('/forfait',auth, async (req, res) => { //creer un forfait
     
     try {
         const forfait = new Forfait(req.body)
@@ -18,7 +18,17 @@ router.post('/forfait', async (req, res) => { //creer un forfait
         return res.status(404).send(error)
     }
 })
-router.post('/forfaits',auth, async (req, res) => { //creer un forfait
+router.post('/historicForfait',auth, async (req, res) => { //creer un forfait
+
+    try {
+        const hf = new HistoriqueF(req.body)
+        await hf.save()
+        return res.status(201).send(hf)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
+router.post('/forfaits',auth, async (req, res) => { //creer les forfait
     const payes = await Paye.find({})
     const impayes = await Imp.find({})
     const retards = await Retard.find({})
@@ -80,7 +90,7 @@ router.post('/forfaits',auth, async (req, res) => { //creer un forfait
         return res.status(404).send(error)
     }
 })
-router.post('/forfait/:id', async (req, res) => {
+router.post('/forfait/:id',auth, async (req, res) => {
     
     try {
         const forfait = Forfait.findById({_id:req.id})
@@ -94,7 +104,7 @@ router.post('/forfait/:id', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/forfaits', async (req, res) => {
+router.get('/forfaits',auth, async (req, res) => {
     
     try {
         const forfaits = await Forfait.find({})
@@ -103,7 +113,7 @@ router.get('/forfaits', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/forfaitClientT', async (req, res) => {
+router.get('/forfaitClientT',auth, async (req, res) => {
 
     try {
         const forfaits = await Forfait.find({})
@@ -113,7 +123,7 @@ router.get('/forfaitClientT', async (req, res) => {
     }
 })
 
-router.get('/clientForfait/:id', async (req, res) => {
+router.get('/clientForfait/:id',auth, async (req, res) => {
     const forfaitsClient = []
     const forfaits = await Forfait.find({})
     const allHf = await HistoriqueF.find({})

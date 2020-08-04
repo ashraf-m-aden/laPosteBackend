@@ -5,15 +5,15 @@ const jwt = require('jsonwebtoken')
 const clientSchema = new mongoose.Schema({
     name: {
         type: String,
-        //required: true
+        required: true
     },
     address: {
         type: String,
-        //required: true
+        required: true
     },
     number: {
         type: String,
-        //required: true
+        required: true
     },
     email: {
         type: String,
@@ -34,32 +34,34 @@ const clientSchema = new mongoose.Schema({
     },
     idClientType: {
         type: mongoose.Schema.Types.ObjectId,
-        //required: true
+        required: true
     },
     idBoite: {
         type: mongoose.Schema.Types.ObjectId,
-        //required: true
+        required: true
     },
     boiteNumber: {
         type: String,
-        //required: true
+        required: true
     },
     clientType: {
         type: String,
-        //required: true
-    },
-    identityNumber: {
-        type: String,
-        //required: true
+        required: true
     },
     status: {
-        type: String
+        type: String,
+        required: true
+
     },
     bg: {
-        type: String
+        type: String,
+        required: true
+
     },
     idStatus: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+
     },
 
 

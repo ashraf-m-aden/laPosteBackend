@@ -3,8 +3,8 @@ const router = new express.Router()
 const ClientType = require("../models/clientType")
 const ClientStatus = require("../models/clientStatus")
 const Forfait = require("../models/forfait")
-
-router.post('/ClientT', async (req, res) => {
+const auth = require("../middleware/auth")
+router.post('/ClientT',auth, async (req, res) => {
     
     try {
         const clientT = new ClientType(req.body)
@@ -15,7 +15,7 @@ router.post('/ClientT', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientTs', async (req, res) => {
+router.post('/ClientTs',auth, async (req, res) => {
     const clientTs = await ClientType.find({})
     try {
         clientTs.forEach(async client => {
@@ -46,7 +46,7 @@ router.post('/ClientTs', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/clientStatus', async (req, res) => {
+router.post('/clientStatus',auth, async (req, res) => {
 
     try {
         const status = new ClientStatus(req.body)
@@ -57,7 +57,7 @@ router.post('/clientStatus', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientT/:id', async (req, res) => {
+router.post('/ClientT/:id',auth, async (req, res) => {
     
     try {
         const clientT = ClientType.findById({_id:req.id})
@@ -70,7 +70,7 @@ router.post('/ClientT/:id', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/ClientT', async (req, res) => {
+router.get('/ClientT',auth, async (req, res) => {
     
     try {
         const clientTs = await ClientType.find({})
@@ -79,7 +79,7 @@ router.get('/ClientT', async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/ClientT/:id', async (req, res) => {
+router.get('/ClientT/:id',auth, async (req, res) => {
 
     try {
         const clientT = await ClientType.findById({ _id: req.params.id })
