@@ -8,7 +8,36 @@ const CS = require("../models/clientStatus")
 const auth = require('../middleware/auth')
 const HF = require("../models/historiqueForfait")
 const HP = require("../models/historiquePaiements")
-
+const updateClient = async (id) => {
+    const hps = await HP.find({ idClient: id })
+    const client = await Client.findById({ _id: id })
+    await hps.sort((a, b) => {
+        if (a.date < b.date) {
+            return 1;
+        }
+        if (b.date < a.date) {
+            return -1;
+        }
+        return 0;
+    });
+    const date = new Date().getFullYear()
+    if ((date - hps[0].date) === 0) {
+        client.status = "A jour"
+        client.bg = "background:green"
+        client.idStatus = "5f211bafc9518f4404e03c2c"
+        client.save()
+    } else if ((date - hps[0].date) > 1 && (date - hps[0].date) < 4) {
+        client.status = "En retard"
+        client.bg = "background:yellow"
+        client.idStatus = "5f211bd5c9518f4404e03c2d"
+        client.save()
+    } else {
+        client.status = "Resilié"
+        client.bg = "background:red"
+        client.idStatus = "5f211c19c9518f4404e03c2e"
+        client.u()
+    }
+}
 router.post('/client', auth, auth, async (req, res) => {
     const client = new Client(req.body)
     try {
@@ -85,6 +114,7 @@ router.delete('/client/:id', auth, auth, async (req, res) => {
 
 router.get('/client/:id', auth, async (req, res) => {  // get one client
     try {
+
         const client = await Client.findById({ _id: req.params.id })
         if (!client) {
             return res.status(404).send('Client inexistant')
@@ -126,13 +156,16 @@ router.get('/remove', async (req, res) => {  // get the boxes of one client
         clients.forEach(async client => {
             const hfs = await HF.findOne({ idClient: client._id })
             const hps = await HP.findOne({ idClient: client._id })
+            const boite = await Boites.findById({ _id: client.idBoite })
             if (hfs) {
                 await hfs.remove()
-
             }
             if (hps) {
                 await hps.remove()
-
+            }
+            if (boite) {
+                boite.enabled = true
+                await boite.save()
             }
             await client.remove()
         });
@@ -141,5 +174,43 @@ router.get('/remove', async (req, res) => {  // get the boxes of one client
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
+router.post('/updateClient/:id', async (req, res) => {
+  try {
+      const hps = await HP.find({ idClient: req.params.id })
+      const client = await Client.findById({ _id: req.params.id })
+      await hps.sort((a, b) => {
+          if (a.date < b.date) {
+              return 1;
+          }
+          if (b.date < a.date) {
+              return -1;
+          }
+          return 0;
+      });
+      const date = new Date().getFullYear()
+      if ((date - hps[0].date) === 0) {
+          client.status = "A jour"
+          client.bg = "background:green"
+          client.idStatus = "5f211bafc9518f4404e03c2c"
+          await client.save()
+      } else if ((date - hps[0].date) >= 1 && (date - hps[0].date) < 4) {
+          client.status = "En retard"
+          client.bg = "background:yellow"
+          client.idStatus = "5f211bd5c9518f4404e03c2d"
+          await client.save()
+      } else {
+          client.status = "Resilié"
+          client.bg = "background:red"
+          client.idStatus = "5f211c19c9518f4404e03c2e"
+          await client.save()
+      }
+      return res.status(201).send(client)
+  } catch (error) {
+      res.status(500).send(error)
+
+  }
+
+})
+
 
 module.exports = router

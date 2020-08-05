@@ -72,7 +72,7 @@ router.get('/staff/logout', auth, async (req, res) => {
 
 router.get('/staff/:id', auth, async (req, res) => {  // get one staff
     try {
-        const staff = await Staff.findById({ _id: req.id })
+        const staff = await Staff.findById({ _id: req.params.id })
         if (!staff) {
             return res.status(404).send('staff inexistant')
         }

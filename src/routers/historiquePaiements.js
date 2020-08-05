@@ -43,6 +43,19 @@ router.get('/payment/:id', async (req, res) => {
     }
 })
 
+router.post('/removePayment/:id', async (req, res) => { //
+    try {
+        const historic = await HistoricP.findById({ _id: req.params.id })
+        if (!historic) {
+            return res.status(404).send("Pas de paiement")
+        }
+        await historic.remove()
+        return res.status(201).send(historic)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
+
 
 router.post('/historicPs', auth, async (req, res) => {
     const clientB = await Clientb.find({})

@@ -22,17 +22,21 @@ const historicPSchema = new mongoose.Schema({
     forfaits: [{
         idForfait: {
             type: mongoose.Schema.Types.ObjectId,
-            //required: true
+            required: true
         },
         price: {
             type: Number,
-            //required: true
+            required: true
         },
     }],
+    tax: {
+        type: Boolean,
+        default: false
+    },
     staffs: [{
         idStaff: {
             type: mongoose.Schema.Types.ObjectId,
-            //required: true
+            required: true
         },
     }],
     enabled: {

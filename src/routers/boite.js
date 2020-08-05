@@ -20,19 +20,18 @@ router.post('/boite', auth, auth, async (req, res) => {
 
 router.post('/boites', async (req, res) => { //code pour faire migrer la base de données en un coup
     const clients = await Client.find({})
+    const boites = await Boite.find({})
+    const results = [];
     try {
-        clients.forEach(async client => {
-            if (client.status === 'A jour' || (client.status === 'En retard')) {
-                const boite = await Boite.findOne({ _id: client.idBoite })
-                if (boite) {
-                    boite.enabled = false;
-                    await boite.save()
-                }
+        await clients.forEach(async client => {
+            const boite = await Boite.findById({ _id: client.idBoite })
+            if (boite) {
+                results.push(boite)
             }
-        })
-        return res.status(201).send()
+        });
+                return res.status(201).send({results, cnt: results.length})
 
-      } catch (error) {
+    } catch (error) {
         res.status(400).send(error)
     }
 })
@@ -121,7 +120,7 @@ router.get('/boiteClient/:id', auth, async (req, res) => {  // get the clients o
 router.post('/attributeBoite/:id', auth, async (req, res) => {
     try {
         const boite = await Boite.findOne({ _id: req.params.id })
-        if (!boite) {   
+        if (!boite) {
             return res.status(404).send('boite inexistante')
         }
         boite.enabled = false

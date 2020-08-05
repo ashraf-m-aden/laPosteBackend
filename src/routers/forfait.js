@@ -113,7 +113,7 @@ router.get('/forfaits',auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/forfaitClientT',auth, async (req, res) => {
+router.get('/forfaitClientT',auth, async (req, res) => {  // les forfaits pour un type de cient
 
     try {
         const forfaits = await Forfait.find({})
