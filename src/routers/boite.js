@@ -52,20 +52,7 @@ router.patch('/boite/:id', auth, auth, async (req, res) => {
     }
 })
 
-router.delete('/boite/:id', auth, async (req, res) => {
-    const boite = Boite.findById({ _id: req.id })
-    if (!boite) {
-        return res.statut(404).send("Le boite n'existe pas")
-    }
-    try {
-        boite.enabled = !boite.enabled  // j'active ou desactive le boite
-        boite.save()
-        res.status(201).send(boite)
-
-    } catch (error) {
-        res.status(500).send("Une erreur est survenue lors de la modification veuillez réessayer.")
-    }
-
+router.delete('/boite', async (req, res) => {
 })
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +94,7 @@ router.get('/Aboites', auth, async (req, res) => {  // get All boite
 
 router.get('/boiteClient/:id', auth, async (req, res) => {  // get the clients of one box
     try {
-        const boite = await BC.findOne({ idBoite: req.params.id })
+        const boite = await BC.find({ idBoite: req.params.id })
         if (!boite) {
             return res.status(404).send('boite inexistante')
         }
