@@ -33,12 +33,11 @@ const historicPSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    staffs: [{
+
         idStaff: {
             type: mongoose.Schema.Types.ObjectId,
             required: true
         },
-    }],
     enabled: {
         type: Boolean,
         default: true
