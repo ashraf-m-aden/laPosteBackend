@@ -2,10 +2,11 @@ const express = require("express")
 const router = new express.Router()
 const ClientType = require("../models/clientType")
 const ClientStatus = require("../models/clientStatus")
+const Client = require("../models/client")
 const Forfait = require("../models/forfait")
 const auth = require("../middleware/auth")
-router.post('/ClientT',auth, async (req, res) => {
-    
+router.post('/ClientT', auth, async (req, res) => {
+
     try {
         const clientT = new ClientType(req.body)
 
@@ -15,7 +16,7 @@ router.post('/ClientT',auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientTs',auth, async (req, res) => {
+router.post('/ClientTs', auth, async (req, res) => {
     const clientTs = await ClientType.find({})
     try {
         clientTs.forEach(async client => {
@@ -40,13 +41,13 @@ router.post('/ClientTs',auth, async (req, res) => {
                 )
                 await client.save()
             }
-        } )
+        })
         return res.status(201).send(clientTs)
     } catch (error) {
         return res.status(404).send(error)
     }
 })
-router.post('/clientStatus',auth, async (req, res) => {
+router.post('/clientStatus', auth, async (req, res) => {
 
     try {
         const status = new ClientStatus(req.body)
@@ -57,10 +58,10 @@ router.post('/clientStatus',auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientT/:id',auth, async (req, res) => {
-    
+router.post('/ClientT/:id', auth, async (req, res) => {
+
     try {
-        const clientT = ClientType.findById({_id:req.id})
+        const clientT = ClientType.findById({ _id: req.id })
         clientT.name = req.body.name
         clientT.description = req.body.description
         clientT.idTypeBoite = req.body.idTypeBoite
@@ -70,8 +71,8 @@ router.post('/ClientT/:id',auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/ClientT',auth, async (req, res) => {
-    
+router.get('/ClientT', auth, async (req, res) => {
+
     try {
         const clientTs = await ClientType.find({})
         return res.status(201).send(clientTs)
@@ -79,11 +80,11 @@ router.get('/ClientT',auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.get('/ClientT/:id',auth, async (req, res) => {
+router.get('/ClientT/:id', auth, async (req, res) => {
 
     try {
         const clientT = await ClientType.findById({ _id: req.params.id })
-        
+
         return res.status(201).send(clientT)
     } catch (error) {
         return res.status(404).send(error)
