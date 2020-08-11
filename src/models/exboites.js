@@ -24,6 +24,6 @@ const boiteSchema = new mongoose.Schema({
     { timestamps: true })
 
 
-const Boite = mongoose.model('exboites', boiteSchema)
+const EXBOITES = mongoose.model('exboites', boiteSchema)
 
-module.exports = Boite
+module.exports = EXBOITES

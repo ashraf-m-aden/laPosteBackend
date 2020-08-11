@@ -18,6 +18,16 @@ router.post('/historicP', auth, async (req, res) => {
     }
 })
 
+router.post('/historicPs', auth, async (req, res) => {
+    try {
+        const hp = await new HistoricP(req.body)
+        await hp.save()
+        return res.status(201).send(hp)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
+
 router.get('/allPayment', async (req, res) => { // tous les paiements
     try {
         const historics = await HistoricP.find({enabled: true})
