@@ -151,11 +151,55 @@ router.get('/client/:id', async (req, res) => {  // get one client
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
 })
-router.get('/clients', auth, async (req, res) => {  // get All client
+router.get('/clients',
+ async (req, res) => {  // get All client
     try {
         const clients = await Client.find({ enabled: true })
         if (!clients) {
             return res.status(404).send('Pas de clients')
+        }
+        res.status(200).send(clients)
+    } catch (error) {
+        res.status(500).send('Problem de serveur')
+    }
+})
+router.get('/clientBoites',
+ async (req, res) => {  // get All clientboite
+    try {
+        const clients = await CB.find({enabled: true})
+        if (!clients) {
+            return res.status(404).send('Pas de clients')
+        }
+        res.status(200).send(clients)
+    } catch (error) {
+        res.status(500).send('Problem de serveur')
+    }
+})
+router.get('/clientBoiteRED',
+ async (req, res) => {  // get All clientboite
+    try {
+        const clients = await CB.find({enabled: false})
+        if (!clients) {
+            return res.status(404).send('Pas de clients')
+        }
+        res.status(200).send(clients)
+    } catch (error) {
+        res.status(500).send('Problem de serveur')
+    }
+})
+router.post('/clientBoites',
+ async (req, res) => {  // post All clientboite
+    try {
+        const clients = await CB.find({})
+        if (!clients) {
+            return res.status(404).send('Pas de clients')
+        } else {
+            clients.forEach(async element => {
+                if (element.status === "Resilié") {
+                    element.enabled = false
+                    await element.save()
+                }
+            });
         }
         res.status(200).send(clients)
     } catch (error) {
@@ -251,6 +295,37 @@ router.post('/updateClient/:id', async (req, res) => {
     }
 
 })
+router.post('/updateClientCB', async (req, res) => {
+    try {
+        const cbs = await CB.find({})
+  cbs.forEach(async cb => {
+    const date = new Date().getFullYear()
+    if ((date - cb.startDate) === 0) {
+        cb.status = "A jour"
+        cb.bg = "background:green"
+        cb.idStatus = "5f211bafc9518f4404e03c2c"
+        cb.enabled = true
+        await cb.save()
+    } else if ((date - cb.startDate) >= 1 && (date - cb.startDate) < 3) {
+        cb.status = "En retard"
+        cb.bg = "background:yellow"
+        cb.idStatus = "5f211bd5c9518f4404e03c2d"
+        cb.enabled = true
+        await cb.save()
+    } else {
+        cb.status = "Resilié"
+        cb.bg = "background:red"
+        cb.idStatus = "5f211c19c9518f4404e03c2e"
+        cb.enabled = false
+        await cb.save()
+    }
+  });
+        return res.status(201).send(client)
+    } catch (error) {
+        res.status(500).send(error)
 
+    }
+
+})
 
 module.exports = router
