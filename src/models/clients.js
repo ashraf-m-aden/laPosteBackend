@@ -30,13 +30,13 @@ const clientSchema = new mongoose.Schema({
     phonecl: {
         type: String,
     },
-    Nbp: {
+    number: {
         type: String,
     }
-  
+
 },
     { timestamps: true })
 
-const BGP = mongoose.model('bgpdatas', clientSchema)
+const GB = mongoose.model('pboites', clientSchema)
 
-module.exports = BGP
+module.exports = GB

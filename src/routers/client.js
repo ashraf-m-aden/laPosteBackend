@@ -3,11 +3,14 @@ const router = new express.Router()
 const Client = require("../models/client")
 const CB = require("../models/clientBoite")
 const PAYES = require("../models/payes")
+const Imp = require("../models/retard")
 const Boites = require("../models/boite")
+const ExBoites = require("../models/exboites")
 const CS = require("../models/clientStatus")
 const auth = require('../middleware/auth')
 const HF = require("../models/historiqueForfait")
 const HP = require("../models/historiquePaiements")
+const Boite = require("../models/boite")
 const updateClient = async (id) => {
     const hps = await HP.find({ idClient: id })
     const client = await Client.findById({ _id: id })
@@ -47,27 +50,51 @@ router.post('/client', auth, auth, async (req, res) => {
         res.status(400).send(error)
     }
 })
-router.post('/clients', auth, async (req, res) => {
-    const clients = await Client.find({})
+router.post('/clients', async (req, res) => {
+    const clients = await Client.find({ enabled: true })
     const payes = await PAYES.find({})
     const boites = await Boites.find({})
-    const cs = await CS.find({})
+    const exBoites = await ExBoites.find({})
+    const cbs = await CB.find({})
     try {
-        await clients.forEach(auth, async client => {
-
-            if (client.status === 'A jour') {
-                client.bg = 'background:green'
-            } else if (client.status === 'En retard') {
-                client.bg = 'background:yellow'
-            } else {
-                client.bg = 'background:red'
-
+        // exBoites.forEach(async exb => {
+        //     const cb = await CB.findOne({ boiteNumber: exb.number })
+        //     if (cb) {
+        //         if (cb.clientType === "IND") {
+        //             if (exb.boiteType === "Moyenne") {
+        //                 cb.boiteType = "Moyenne"
+        //                 cb.idBoiteType = "5f17e01b37824a17b83d07a7"
+        //                 await cb.save()
+        //             }
+        //             if (exb.boiteType === "Petite") {
+        //                 cb.boiteType = "Petite"
+        //                 cb.idBoiteType = "5f17e01437824a17b83d07a6"
+        //                 await cb.save()
+        //             }
+        //         } else {
+        //             if (exb.boiteType === "Moyenne") {
+        //                 cb.boiteType = "Moyenne"
+        //                 cb.idBoiteType = "5f317a650f5f5b445cf1379c"
+        //                 await cb.save()
+        //             }
+        //             if (exb.boiteType === "Grande") {
+        //                 cb.boiteType = "Grande"
+        //                 cb.idBoiteType = "5f17e00d37824a17b83d07a5"
+        //                 await cb.save()
+        //             }
+        //         }
+        //     }
+        // });
+        const cb = await CB.find({})
+        clients.forEach(async client => {
+            const p = await PAYES.findOne({ clientName: client.name, NBP: client.boiteNumber })
+            const i = await Imp.findOne({ clientName: client.name, NBP: client.boiteNumber })
+            if (!p && !i) {
+                console.log(client);
             }
 
-            await client.save()
-
         });
-        return res.status(201).send(clients)
+        return res.status(201).send({ cnt: clients.length })
     } catch (error) {
         res.status(400).send(error.response)
     }
@@ -112,7 +139,7 @@ router.delete('/client/:id', auth, auth, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/client/:id',  async (req, res) => {  // get one client
+router.get('/client/:id', async (req, res) => {  // get one client
     try {
 
         const client = await Client.findById({ _id: req.params.id })
@@ -136,13 +163,26 @@ router.get('/clients', auth, async (req, res) => {  // get All client
     }
 })
 
-router.get('/clientBoite/:id', auth, async (req, res) => {  // get the boxes of one client
+router.get('/clientBoite/:id', async (req, res) => {  // get the boxes of one client
     try {
         const client = await CB.find({ idClient: req.params.id })
         if (!client) {
             return res.status(404).send('Client inexistant')
         }
         res.status(200).send(client)
+    } catch (error) {
+        res.status(500).send('Un problem est survenu veuillez reessayer')
+    }
+})
+
+router.get('/clientBoiteById/', async (req, res) => {  // get the boxes of one client
+    try {
+        const client = await CB.find({})
+        const results = await client.filter(cl => !cl.boiteType)
+        // if (!client) {
+        //     return res.status(404).send('Client inexistant')
+        // }
+        res.status(200).send(results[1234])
     } catch (error) {
         res.status(500).send('Un problem est survenu veuillez reessayer')
     }
@@ -175,40 +215,40 @@ router.get('/remove', async (req, res) => {  // get the boxes of one client
     }
 })
 router.post('/updateClient/:id', async (req, res) => {
-  try {
-      const hps = await HP.find({ idClient: req.params.id })
-      const client = await Client.findById({ _id: req.params.id })
-      await hps.sort((a, b) => {
-          if (a.date < b.date) {
-              return 1;
-          }
-          if (b.date < a.date) {
-              return -1;
-          }
-          return 0;
-      });
-      const date = new Date().getFullYear()
-      if ((date - hps[0].date) === 0) {
-          client.status = "A jour"
-          client.bg = "background:green"
-          client.idStatus = "5f211bafc9518f4404e03c2c"
-          await client.save()
-      } else if ((date - hps[0].date) >= 1 && (date - hps[0].date) < 4) {
-          client.status = "En retard"
-          client.bg = "background:yellow"
-          client.idStatus = "5f211bd5c9518f4404e03c2d"
-          await client.save()
-      } else {
-          client.status = "Resilié"
-          client.bg = "background:red"
-          client.idStatus = "5f211c19c9518f4404e03c2e"
-          await client.save()
-      }
-      return res.status(201).send(client)
-  } catch (error) {
-      res.status(500).send(error)
+    try {
+        const hps = await HP.find({ idClient: req.params.id })
+        const client = await Client.findById({ _id: req.params.id })
+        await hps.sort((a, b) => {
+            if (a.date < b.date) {
+                return 1;
+            }
+            if (b.date < a.date) {
+                return -1;
+            }
+            return 0;
+        });
+        const date = new Date().getFullYear()
+        if ((date - hps[0].date) === 0) {
+            client.status = "A jour"
+            client.bg = "background:green"
+            client.idStatus = "5f211bafc9518f4404e03c2c"
+            await client.save()
+        } else if ((date - hps[0].date) >= 1 && (date - hps[0].date) < 4) {
+            client.status = "En retard"
+            client.bg = "background:yellow"
+            client.idStatus = "5f211bd5c9518f4404e03c2d"
+            await client.save()
+        } else {
+            client.status = "Resilié"
+            client.bg = "background:red"
+            client.idStatus = "5f211c19c9518f4404e03c2e"
+            await client.save()
+        }
+        return res.status(201).send(client)
+    } catch (error) {
+        res.status(500).send(error)
 
-  }
+    }
 
 })
 

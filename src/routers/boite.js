@@ -2,11 +2,10 @@ const express = require("express")
 const router = new express.Router()
 const auth = require('../middleware/auth')
 const Boite = require("../models/boite")
-const IMP = require("../models/impayes")
 const Client = require("../models/client")
 const BC = require("../models/clientBoite")
-const CL = require("../models/client")
-const Retard = require("../models/retard")
+const MB = require("../models/clients")
+
 
 router.post('/boite', auth, auth, async (req, res) => {
     const boite = new boite(req.body)
@@ -21,15 +20,15 @@ router.post('/boite', auth, auth, async (req, res) => {
 router.post('/boites', async (req, res) => { //code pour faire migrer la base de données en un coup
     const clients = await Client.find({})
     const boites = await Boite.find({})
-    const results = [];
+    const MBs = await MB.find({})
     try {
-        await clients.forEach(async client => {
-            const boite = await Boite.findById({ _id: client.idBoite })
-            if (boite) {
-                results.push(boite)
-            }
+        MBs.forEach(async (gb) => {
+            const boite = await new Boite()
+            boite.number = gb.number
+            boite.save()
+
         });
-                return res.status(201).send({results, cnt: results.length})
+        return res.status(201).send(boites)
 
     } catch (error) {
         res.status(400).send(error)
@@ -58,7 +57,7 @@ router.delete('/boite', async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/boite/:id', auth, async (req, res) => {  // get one boite
+router.get('/boite/:id', async (req, res) => {  // get one boite
     try {
         const boite = await Boite.findById({ _id: req.params.id })
         if (!boite) {
@@ -80,13 +79,13 @@ router.get('/boites', auth, async (req, res) => {  // get All boite
         res.status(500).send('Problem de serveur')
     }
 })
-router.get('/Aboites', auth, async (req, res) => {  // get All boite
+router.get('/Aboites', async (req, res) => {  // get All boite
     try {
-        const boites = await Boite.find({ enabled: true })
+        const boites = await Boite.findOne({ enabled: true })
         if (!boites) {
             return res.status(404).send('Pas de boites')
         }
-        res.status(200).send(boites)
+        res.status(200).send({ boites, cnt: boites.length })
     } catch (error) {
         res.status(500).send('Problem de serveur')
     }
