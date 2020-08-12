@@ -36,4 +36,14 @@ router.get('/boiteT',auth, async (req, res) => {
     }
 })
 
+router.get('/oneBoiteT/:id',auth, async (req, res) => {
+    
+    try {
+        const boiteT = await BoiteType.findById({_id:req.params.id})
+        return res.status(201).send(boiteT)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
 module.exports = router

@@ -3,7 +3,8 @@ const router = new express.Router();
 const Client = require("../models/client");
 const CB = require("../models/clientBoite");
 const PAYES = require("../models/payes");
-const Imp = require("../models/retard");
+const RETARDS = require("../models/retard");
+const IMPAYES = require("../models/impayes");
 const Boites = require("../models/boite");
 const EXBOITES = require("../models/exboites");
 const CS = require("../models/clientStatus");
@@ -22,57 +23,65 @@ router.post("/client", auth, auth, async (req, res) => {
   }
 });
 router.post("/clients", async (req, res) => {
- // const clients = await Client.find({ enabled: true });
-//   const payes = await PAYES.find({});
-//   const boites = await Boites.find({});
-//   const exBoites = await ExBoites.find({});
-  const cbs = await CB.find({});
-  try {
-      var i = 0
-    await cbs.forEach(async cb => {
-        const exb = await EXBOITES.findOne({ number: cb.boiteNumber })
-        if (exb) {
-            if (cb.clientType === "IND") {
-                if (exb.boiteType === "Moyenne") {
-                    cb.boiteType = "Moyenne"
-                    cb.idBoiteType = "5f17e01b37824a17b83d07a7"
-                    i++
-                    console.log(i);
-                    await cb.save()
-                }
-                if (exb.boiteType === "Petite") {
-                    cb.boiteType = "Petite"
-                    cb.idBoiteType = "5f17e01437824a17b83d07a6"
-                    i++
-                    console.log(i);
-                    await cb.save()
-                }
-            } else {
-                if (exb.boiteType === "Moyenne") {
-                    cb.boiteType = "Moyenne"
-                    cb.idBoiteType = "5f317a650f5f5b445cf1379c"
-                    i++
-                    console.log(i);
-                    await cb.save()
-                }
-                if (exb.boiteType === "Grande") {
-                    cb.boiteType = "Grande"
-                    cb.idBoiteType = "5f17e00d37824a17b83d07a5"
-                    i++
-                    console.log(i);
-                    await cb.save()
-                }
+  // const clients = await Client.find({ enabled: true });
+    const paye = await PAYES.find({});
+ //   const boites = await Boites.find({});
+ //   const exBoites = await ExBoites.find({});
+   try {
+       var i = 0
+     await paye.forEach(async pay => {
+         const boite = await Boites.findOne({ number: pay.NBP })
+         const client = await Client.findOne({ name: pay.clientName })
+       if (client) {
+         if (boite) {
+           var cb = await new CB()
+           cb.idBoite = boite._id
+           cb.boiteNumber = boite.number
+           cb.clientName = client.name
+           cb.idClient = client._id
+           cb.idClientType = client.idClientType
+           cb.clientType = client.clientType
+           cb.idClient = client._id
+           cb.startDate = boite.Rdv
+           cb.status = client.status
+           cb.idStatus = client.idStatus
+           cb.bg = client.bg
+             if (client.clientType === "IND") {
+                 if (pay.Cat.toLowerCase() === "mo") {
+                     cb.boiteType = "Moyenne"
+                     cb.idBoiteType = "5f17e01b37824a17b83d07a7"
+                     await cb.save()
+                 }
+                 if (pay.Cat.toLowerCase() === "pe") {
+
+                     cb.boiteType = "Petite"
+                     cb.idBoiteType = "5f17e01437824a17b83d07a6"
+                     await cb.save()
+                   }
+             } 
+             else {
+                 if (pay.Cat.toLowerCase() === "mo") {
+
+                     cb.boiteType = "Moyenne"
+                     cb.idBoiteType = "5f317a650f5f5b445cf1379c"
+                     await cb.save()
+                   }
+                 if (pay.Cat.toLowerCase() === "gr") {
+                     cb.boiteType = "Grande"
+                     cb.idBoiteType = "5f17e00d37824a17b83d07a5"
+                     await cb.save()
+                   }
+              }
              }
-        } else {
-            console.log(cb.boiteNumber);
-        }
-    });
-   const exb = await CB.find({})
-    return res.status(201).send(exb);
-  } catch (error) {
-    res.status(400).send(error.response);
-  }
-});
+       }
+         
+     });
+    const exb = await CB.find()
+     return await res.status(201).send({cnt:exb.length});
+   } catch (error) {
+     res.status(400).send(error.response);
+   }
+ });
 
 router.patch("/client/:id", auth, auth, async (req, res) => {
   const client = Client.findById({ _id: req.id });
@@ -143,6 +152,18 @@ router.get("/clientBoites", async (req, res) => {
   // get All clientboite
   try {
     const clients = await CB.find({ enabled: true });
+    if (!clients) {
+      return res.status(404).send("Pas de clients");
+    }
+    res.status(200).send(clients);
+  } catch (error) {
+    res.status(500).send("Problem de serveur");
+  }
+});
+router.get("/allClientBoites", async (req, res) => {
+  // get All clientboite
+  try {
+    const clients = await CB.find({});
     if (!clients) {
       return res.status(404).send("Pas de clients");
     }
@@ -287,6 +308,29 @@ router.post("/updateClientCB", async (req, res) => {
     });
     const cb = await CB.find({});
     return res.status(201).send(cb);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+
+router.post("/updateClientb", async (req, res) => {
+  try {
+    const client = await CB.find({});
+    await client.forEach(async element => {
+      if (element.status === "A jour" || element.status === "En retard") {
+        element.enabled = true
+        element.NA = false
+        await element.save()
+      } else {
+        element.enabled = false
+        element.NA = false
+        await element.save()
+
+      }
+    });
+
+    return res.status(201).send(client);
   } catch (error) {
     res.status(500).send(error);
   }
