@@ -15,15 +15,21 @@ const clientTypeSchema = new mongoose.Schema({
         },
         price: {
             type: Number
+        },
+        name: {
+            type: String
         }
     }],
     forfaits: [{
         idForfait: {
-        type: mongoose.Schema.Types.ObjectId,
-        //required: true
+            type: mongoose.Schema.Types.ObjectId,
+            //required: true
         },
         price: {
             type: Number
+        },
+        name: {
+            type: String
         }
     }],
     enabled: {
@@ -31,7 +37,7 @@ const clientTypeSchema = new mongoose.Schema({
         default: true
     }
 },
-{timestamps: true})
+    { timestamps: true })
 
 
 const ClientType = mongoose.model('ClientType', clientTypeSchema)

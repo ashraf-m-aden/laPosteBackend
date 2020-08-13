@@ -16,32 +16,60 @@ router.post('/ClientT', auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientTs', auth, async (req, res) => {
+router.post('/ClientTs', async (req, res) => {
     const clientTs = await ClientType.find({})
     try {
-        clientTs.forEach(async client => {
-            if (client._id == "5f167fae24124d1b60b897a9") {
-                console.log('yes');
-                await client.forfaits.push(
-                    { idForfait: "5f17def8d3194c205c55612d", price: 5000 },
-                    { idForfait: "5f17df05d3194c205c55612e", price: 5000 },
-                    { idForfait: "5f17df19d3194c205c55612f", price: 5000 },
-                    { idForfait: "5f17df20d3194c205c556130", price: 5000 },
-                    { idForfait: "5f17df35d3194c205c556131", price: 5000 },
-                )
-                await client.save()
-            } else {
-                await client.idBoitetypes.push(
-                    { idForfait: "5f17def8d3194c205c55612d", price: 5000 },
-                    { idForfait: "5f17df05d3194c205c55612e", price: 5000 },
-                    { idForfait: "5f17df19d3194c205c55612f", price: 5000 },
-                    { idForfait: "5f17df20d3194c205c556130", price: 5000 },
-                    { idForfait: "5f17df35d3194c205c556131", price: 5000 },
+        await clientTs.forEach(async clients => {
+            console.log(clientTs);
+            if (clients._id == "5f167fae24124d1b60b897a9") {
+                clients.idBoitetypes = [
+                    {
+                        idBoiteType: "5f17e01437824a17b83d07a6",
+                        price: 10000,
+                        name: "Petite"
 
-                )
-                await client.save()
+                    },
+                    {
+                        idBoiteType: "5f17e01b37824a17b83d07a7",
+                        price: 15000,
+                        name: "Moyenne"
+
+
+                    },
+                    {
+                        idBoiteType: "5f17f0323cc901299856629e",
+                        price: 20000,
+                        name: "BL"
+
+
+                    }
+                ]
+                await clients.save()
+                console.log(clients);
+            } else {
+                clients.idBoitetypes = [
+                    {
+                        idBoiteType: "5f317a650f5f5b445cf1379c",
+                        price: 20000,
+                        name: "Moyenne"
+
+
+                    },
+                    {
+                        idBoiteType: "5f17e00d37824a17b83d07a5",
+                        price: 30000,
+                        name: "Grande"
+                    },
+                    {
+                        idBoiteType: "5f17f0323cc901299856629e",
+                        price: 20000,
+                        name: "BL"
+
+                    }
+                ]
+                await clients.save()
             }
-        })
+        });
         return res.status(201).send(clientTs)
     } catch (error) {
         return res.status(404).send(error)

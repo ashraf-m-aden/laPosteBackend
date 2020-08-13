@@ -18,15 +18,11 @@ router.post('/boite', auth, auth, async (req, res) => {
 })
 
 router.post('/boites', async (req, res) => { //code pour faire migrer la base de données en un coup
-    const clients = await Client.find({})
     const boites = await Boite.find({})
-    const MBs = await MB.find({})
     try {
-        MBs.forEach(async (gb) => {
-            const boite = await new Boite()
-            boite.number = gb.number
-            boite.save()
-
+        await boites.forEach(element => {
+            element.enabled = true
+            element.save()
         });
         return res.status(201).send(boites)
 
@@ -81,11 +77,11 @@ router.get('/boites', auth, async (req, res) => {  // get All boite
 })
 router.get('/Aboites', async (req, res) => {  // get All boite
     try {
-        const boites = await Boite.findOne({ enabled: true })
+        const boites = await Boite.find({ enabled: false })
         if (!boites) {
             return res.status(404).send('Pas de boites')
         }
-        res.status(200).send({ boites, cnt: boites.length })
+        res.status(200).send(boites)
     } catch (error) {
         res.status(500).send('Problem de serveur')
     }
@@ -103,15 +99,24 @@ router.get('/boiteClient/:id', auth, async (req, res) => {  // get the clients o
     }
 })
 
+
 router.post('/attributeBoite/:id', auth, async (req, res) => {
     try {
         const boite = await Boite.findOne({ _id: req.params.id })
-        if (!boite) {
+        const cb = await BC.findOne({ enabled: true, idBoite: req.params.id })
+        if (!boite || !cb) {
             return res.status(404).send('boite inexistante')
         }
+        cb.enabled = false
+        cb.status = 'Resilié'
+        cb.bg = "background:red"
+        cb.idStatus = "5f211c19c9518f4404e03c2e"
+        cb.idStaff = req.staff._id
+        cb.releaseDate = new Date()
         boite.enabled = false
         await boite.save()
-        res.status(200).send(boite)
+        await cb.save()
+        res.status(200).send({ boite, cb })
     } catch (error) {
         res.status(500).send(error)
     }
