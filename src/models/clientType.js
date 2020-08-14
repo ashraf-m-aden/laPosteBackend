@@ -32,6 +32,18 @@ const clientTypeSchema = new mongoose.Schema({
             type: String
         }
     }],
+    operations: [{
+        idOperation: {
+            type: mongoose.Schema.Types.ObjectId,
+            //required: true
+        },
+        price: {
+            type: Number
+        },
+        name: {
+            type: String
+        }
+    }],
     enabled: {
         type: Boolean,
         default: true

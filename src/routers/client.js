@@ -266,6 +266,11 @@ router.get("/remove", async (req, res) => {
             const hfs = await HF.findOne({ idClient: client._id });
             const hps = await HP.findOne({ idClient: client._id });
             const cb = await CB.findOne({ idClient: client._id })
+            const boite = await Boite.findById({ _id: cb.idBoite })
+            if (boite) {
+                boite.enabled = false
+                await boite.save()
+            }
             if (hfs) {
                 await hfs.remove();
             }

@@ -4,12 +4,21 @@ const historicPSchema = new mongoose.Schema({
         type: String,
         //required: [true, 'Why no values? Always provide values!'],
     },
+    boiteType: {
+        type: String,
+        required: [true, 'Why no values? Always provide values!'],
+    },
+
+    clientName: {
+        type: String,
+        //required: [true, 'Why no values? Always provide values!'],
+    },
     idBoite: {
         type: mongoose.Schema.Types.ObjectId,
         //required: true
     },
     priceBoite: {
-      type:Number  
+        type: Number
     },
     idClient: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,21 +43,21 @@ const historicPSchema = new mongoose.Schema({
         default: false
     },
 
-        idStaff: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true
-        },
+    idStaff: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     enabled: {
         type: Boolean,
         default: true
     },
     toModify: {
         type: Boolean,
-        default: true
+        default: false
     },
     toDelete: {
         type: Boolean,
-        default: true
+        default: false
     },
     date: {
         type: Number,

@@ -10,6 +10,7 @@ const client = require("./routers/client")
 const staff = require("./routers/staff")
 const staffT = require("./routers/staffType")
 const historicPys = require("./routers/historiquePaiements")
+const operations = require("./routers/operations")
 
 
 const app = express()
@@ -23,7 +24,7 @@ app.use(function (req, res, next) {
 const imagesPath = path.join(__dirname, '../images')
 
 
-app.use('/images',express.static(imagesPath))
+app.use('/images', express.static(imagesPath))
 app.use(express.json())
 app.use(clientTRouter)
 app.use(forfait)
@@ -33,6 +34,7 @@ app.use(client)
 app.use(staff)
 app.use(staffT)
 app.use(historicPys)
+app.use(operations)
 
 
 app.listen(port, () => {

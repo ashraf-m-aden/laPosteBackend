@@ -16,59 +16,38 @@ router.post('/ClientT', auth, async (req, res) => {
         return res.status(404).send(error)
     }
 })
-router.post('/ClientTs', async (req, res) => {
+router.post('/clientTs', async (req, res) => {
     const clientTs = await ClientType.find({})
     try {
         await clientTs.forEach(async clients => {
-            console.log(clientTs);
-            if (clients._id == "5f167fae24124d1b60b897a9") {
-                clients.idBoitetypes = [
-                    {
-                        idBoiteType: "5f17e01437824a17b83d07a6",
-                        price: 10000,
-                        name: "Petite"
+            clients.operations = [
+                {
+                    idOperation: "5f3673eb336de80e1092d135",
+                    price: 5000,
+                    name: "Changement de nom"
 
-                    },
-                    {
-                        idBoiteType: "5f17e01b37824a17b83d07a7",
-                        price: 15000,
-                        name: "Moyenne"
+                },
+                {
+                    idOperation: "5f367648336de80e1092d137",
+                    price: 1500,
+                    name: "Nouvelle clé A"
 
+                },
+                {
+                    idOperation: "5f367655336de80e1092d138",
+                    price: 3000,
+                    name: "Nouvelle clé B1"
 
-                    },
-                    {
-                        idBoiteType: "5f17f0323cc901299856629e",
-                        price: 20000,
-                        name: "BL"
+                },
+                {
+                    idOperation: "5f36765d336de80e1092d139",
+                    price: 0,
+                    name: "Nouvelle clé B2"
 
+                },
 
-                    }
-                ]
-                await clients.save()
-                console.log(clients);
-            } else {
-                clients.idBoitetypes = [
-                    {
-                        idBoiteType: "5f317a650f5f5b445cf1379c",
-                        price: 20000,
-                        name: "Moyenne"
-
-
-                    },
-                    {
-                        idBoiteType: "5f17e00d37824a17b83d07a5",
-                        price: 30000,
-                        name: "Grande"
-                    },
-                    {
-                        idBoiteType: "5f17f0323cc901299856629e",
-                        price: 20000,
-                        name: "BL"
-
-                    }
-                ]
-                await clients.save()
-            }
+            ]
+            await clients.save()
         });
         return res.status(201).send(clientTs)
     } catch (error) {
