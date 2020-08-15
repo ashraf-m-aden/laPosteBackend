@@ -11,6 +11,7 @@ const staff = require("./routers/staff")
 const staffT = require("./routers/staffType")
 const historicPys = require("./routers/historiquePaiements")
 const operations = require("./routers/operations")
+const clientBoites = require("./routers/clientBoites")
 
 
 const app = express()
@@ -35,6 +36,7 @@ app.use(staff)
 app.use(staffT)
 app.use(historicPys)
 app.use(operations)
+app.use(clientBoites)
 
 
 app.listen(port, () => {

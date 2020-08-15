@@ -3,7 +3,7 @@ const router = new express.Router()
 const Staff = require("../models/staff")
 const auth = require('../middleware/auth')
 
-router.post('/staff',auth, async (req, res) => {
+router.post('/staff', async (req, res) => {
     const staff = new Staff(req.body)
     try {
         staff.save()
@@ -14,7 +14,7 @@ router.post('/staff',auth, async (req, res) => {
 })
 
 router.patch('/staff/:id', auth, async (req, res) => {
-    const staff = Staff.findById({_id:req.id})
+    const staff = Staff.findById({ _id: req.id })
     if (!staff) {
         return res.statut(404).send("Le staff n'existe pas")
     }
@@ -31,14 +31,14 @@ router.patch('/staff/:id', auth, async (req, res) => {
     }
 })
 
-router.delete('/staff/:id',auth,async(req,res)=>{
-    const staff = Staff.findById({_id:req.id})
+router.delete('/staff/:id', auth, async (req, res) => {
+    const staff = Staff.findById({ _id: req.id })
     if (!staff) {
         return res.statut(404).send("Le staff n'existe pas")
     }
     try {
         staff.enabled = !staff.enabled  // j'active ou desactive le staff
-        staff.save()  
+        staff.save()
         res.status(201).send(staff)
 
     } catch (error) {
@@ -92,5 +92,5 @@ router.get('/staffs', auth, async (req, res) => {  // get All staff
         res.status(500).send('Problem de serveur')
     }
 })
-    
+
 module.exports = router
