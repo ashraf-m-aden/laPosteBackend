@@ -17,7 +17,7 @@ router.post('/operation', async (req, res) => { //creer un forfait
     }
 })
 
-router.get('/operations/:id', async (req, res) => { //creer un forfait
+router.get('/operations/:id', async (req, res) => { //recuperer les forfait
 
     try {
         const operations = await HO.find({ idClient: req.params.id })
@@ -25,6 +25,20 @@ router.get('/operations/:id', async (req, res) => { //creer un forfait
             res.status(200).send({ operations: [] })
         }
         res.status(200).send(operations)
+
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
+router.get('/operation/:id', async (req, res) => { // recuperer un forfait
+
+    try {
+        const operation = await HO.findById({ _id: req.params.id })
+        if (!operations) {
+            res.status(200).send({ operations: [] })
+        }
+        res.status(200).send(operation)
 
     } catch (error) {
         return res.status(404).send(error)

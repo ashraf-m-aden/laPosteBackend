@@ -4,15 +4,6 @@ const historicPSchema = new mongoose.Schema({
         type: String,
         //required: [true, 'Why no values? Always provide values!'],
     },
-    boiteType: {
-        type: String,
-        required: [true, 'Why no values? Always provide values!'],
-    },
-
-    clientName: {
-        type: String,
-        //required: [true, 'Why no values? Always provide values!'],
-    },
     idBoite: {
         type: mongoose.Schema.Types.ObjectId,
         //required: true
@@ -37,6 +28,9 @@ const historicPSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
+        name: {
+            type: String
+        }
     }],
     tax: {
         type: Boolean,

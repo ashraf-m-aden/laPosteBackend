@@ -30,7 +30,7 @@ router.post('/historicPs', auth, async (req, res) => {
 
 router.get('/allPayment', async (req, res) => { // tous les paiements
     try {
-        const historics = await HistoricP.find({enabled: true})
+        const historics = await HistoricP.find({ enabled: true })
         if (!historics) {
             return res.status(404).send("Pas de paiements pour ce client")
 
@@ -83,7 +83,7 @@ router.post('/changePayment', async (req, res) => {
     try {
         const hps = await HistoricP.find({})
         await hps.forEach(async hp => {
-            if (hp.boiteNumber==='' || hp.boiteNumber === null || hp.boiteNumber === undefined) {
+            if (hp.boiteNumber === '' || hp.boiteNumber === null || hp.boiteNumber === undefined) {
                 hp.enabled = false
             }
             await hp.save()

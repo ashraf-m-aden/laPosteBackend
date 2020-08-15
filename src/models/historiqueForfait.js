@@ -24,7 +24,7 @@ const hfSchema = new mongoose.Schema({
         default: true
     }
 },
-{timestamps: true})
+    { timestamps: true })
 
 
 const HF = mongoose.model('historiqueforfaits', hfSchema)
