@@ -42,6 +42,9 @@ const historicOperationchema = new mongoose.Schema(
         staffName: {
             type: String,
         },
+        total: {
+            type: Number,
+        },
         enabled: {
             type: Boolean,
             default: true,

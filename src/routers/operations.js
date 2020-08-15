@@ -5,7 +5,7 @@ const CT = require("../models/clientType")
 const HO = require('../models/historicOperations')
 const auth = require('../middleware/auth')
 
-router.post('/operation', async (req, res) => { //creer un forfait
+router.post('/operation', async (req, res) => { //enregistrer une operation
 
     try {
         const operation = new OPERATION(req.body)
@@ -16,8 +16,19 @@ router.post('/operation', async (req, res) => { //creer un forfait
         return res.status(404).send(error)
     }
 })
+router.post('/historicOperation', async (req, res) => { //enregistrer une operation
 
-router.get('/operations/:id', async (req, res) => { //recuperer les forfait
+    try {
+        const operation = new HO(req.body)
+
+        await operation.save()
+        return res.status(201).send(operation)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
+router.get('/operations/:id', async (req, res) => { //recuperer les operation d'un client
 
     try {
         const operations = await HO.find({ idClient: req.params.id })
@@ -35,10 +46,24 @@ router.get('/operation/:id', async (req, res) => { // recuperer un forfait
 
     try {
         const operation = await HO.findById({ _id: req.params.id })
-        if (!operations) {
+        if (!operation) {
             res.status(200).send({ operations: [] })
         }
         res.status(200).send(operation)
+
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
+router.get('/allOperations', async (req, res) => { // recuperer un forfait
+
+    try {
+        const operations = await HO.find({})
+        if (!operations) {
+            res.status(200).send({ operations: [] })
+        }
+        res.status(200).send(operations)
 
     } catch (error) {
         return res.status(404).send(error)

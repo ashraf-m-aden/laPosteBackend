@@ -12,6 +12,7 @@ const auth = require("../middleware/auth");
 const HF = require("../models/historiqueForfait");
 const HP = require("../models/historiquePaiements");
 const Boite = require("../models/boite");
+const HO = require('../models/historicOperations')
 
 router.post("/client", auth, async (req, res) => {
     const client = await new Client(req.body);
@@ -266,6 +267,7 @@ router.get("/remove", async (req, res) => {
             const hfs = await HF.findOne({ idClient: client._id });
             const hps = await HP.findOne({ idClient: client._id });
             const cb = await CB.findOne({ idClient: client._id })
+            const ho = await HO.findOne({ idClient: client._id })
             const boite = await Boite.findById({ _id: cb.idBoite })
             if (boite) {
                 boite.enabled = false
@@ -273,6 +275,9 @@ router.get("/remove", async (req, res) => {
             }
             if (hfs) {
                 await hfs.remove();
+            }
+            if (ho) {
+                await ho.remove();
             }
             if (cb) {
                 await cb.remove()
