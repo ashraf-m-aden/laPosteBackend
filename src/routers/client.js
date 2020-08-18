@@ -12,7 +12,8 @@ const auth = require("../middleware/auth");
 const HF = require("../models/historiqueForfait");
 const HP = require("../models/historiquePaiements");
 const Boite = require("../models/boite");
-const HO = require('../models/historicOperations')
+const HO = require('../models/historicOperations');
+const CT = require('../models/clientType');
 
 router.post("/client", auth, async (req, res) => {
     const client = await new Client(req.body);
@@ -85,10 +86,12 @@ router.post("/clients", async (req, res) => {
     }
 });
 
-router.patch("/client/:id", auth, auth, async (req, res) => {
-    const client = Client.findById({ _id: req.id });
-    if (!client) {
-        return res.statut(404).send("Le client n'existe pas");
+router.post("/modifyClient/:id", auth, async (req, res) => {
+    const client = await Client.findById({ _id: req.params.id });
+    const cb = await CB.findOne({ idClient: req.params.id })
+    const clientType = await CT.findById({ _id: req.body.idClientType })
+    if (!client || !cb || !clientType) {
+        return res.status(404).send("Le client n'existe pas");
     }
     try {
         client.name = req.body.name;
@@ -96,10 +99,12 @@ router.patch("/client/:id", auth, auth, async (req, res) => {
         client.number = req.body.number;
         client.address = req.body.address;
         client.idClientType = req.body.idClientType;
-        client.idBoite = req.body.idBoite;
-        client.enabled = req.body.enabled;
+        cb.idClientType = clientType._id
+        cb.clientType = clientType.name
+        await cb.save();
         await client.save();
-        return res.send(client);
+
+        return res.send({ cb, client });
     } catch (error) {
         res.status(500).send("Une erreur est survenue, veuillez recommencer.");
     }
