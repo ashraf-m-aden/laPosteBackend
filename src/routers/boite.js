@@ -2,6 +2,7 @@ const express = require("express")
 const router = new express.Router()
 const auth = require('../middleware/auth')
 const Boite = require("../models/boite")
+const BoiteType = require("../models/boiteType")
 const Client = require("../models/client")
 const BC = require("../models/clientBoite")
 const MB = require("../models/clients")
@@ -92,6 +93,24 @@ router.get('/boiteClient/:id', auth, async (req, res) => {  // get the clients o
         const boite = await BC.find({ idBoite: req.params.id })
         if (!boite) {
             return res.status(404).send('boite inexistante')
+        }
+        res.status(200).send(boite)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+
+router.post('/newBoiteType', async (req, res) => {  // get the clients of one box
+    try {
+        const boite = await BC.findOne({ idClient: req.body.idClient, enabled: true })
+        if (!boite) {
+            return res.status(404).send('boite inexistante')
+        }
+        const boiteType = await BoiteType.findById({ _id: req.body.idBoiteType })
+        if (boiteType) {
+            boite.idBoiteType = req.body.idBoiteType
+            boite.boiteType = boiteType.name
+            await boite.save()
         }
         res.status(200).send(boite)
     } catch (error) {
