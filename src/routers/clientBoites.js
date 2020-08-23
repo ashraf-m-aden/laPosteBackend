@@ -11,10 +11,10 @@ const auth = require('../middleware/auth')
 router.post("/clientBoite", auth, async (req, res) => {
     const clientBoite = await new CB(req.body);
     try {
-        const boite = await Boite.findById({ _id: clientBoite.idBoite })
+        const boite = await BOITE.findById({ _id: clientBoite.idBoite })
         boite.enabled = true
-        boite.save()
-        clientBoite.save();
+        await boite.save()
+        await clientBoite.save();
         return res.status(201).send(clientBoite);
     } catch (error) {
         res.status(400).send(error);

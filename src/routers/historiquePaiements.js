@@ -28,6 +28,20 @@ router.post('/historicPs', auth, async (req, res) => {
     }
 })
 
+router.post('/historicPupdate', async (req, res) => {
+    try {
+        const hps = await HistoricP.find({})
+        hps.forEach(async hp => {
+            hp.enabled = true
+            hp.toModify = false
+            hp.toDelete = false
+            await hp.save()
+        });
+        return res.status(201).send(hp)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
 router.get('/allPayment', async (req, res) => { // tous les paiements
     try {
         const historics = await HistoricP.find({ enabled: true })
