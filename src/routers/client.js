@@ -205,6 +205,41 @@ router.get("/remove", async (req, res) => {
     }
 });
 
+router.post("/updateClient/:id", async (req, res) => {
+    try {
+        const hps = await HP.find({ idClient: req.params.id });
+        const client = await Client.findById({ _id: req.params.id });
+        await hps.sort((a, b) => {
+            if (a.date < b.date) {
+                return 1;
+            }
+            if (b.date < a.date) {
+                return -1;
+            }
+            return 0;
+        });
+        const date = new Date().getFullYear();
+        if (date - hps[0].date === 0) {
+            client.status = "A jour";
+            client.bg = "background:green";
+            client.idStatus = "5f211bafc9518f4404e03c2c";
+            await client.save();
+        } else if (date - hps[0].date >= 1 && date - hps[0].date < 4) {
+            client.status = "En retard";
+            client.bg = "background:yellow";
+            client.idStatus = "5f211bd5c9518f4404e03c2d";
+            await client.save();
+        } else {
+            client.status = "Resilié";
+            client.bg = "background:red";
+            client.idStatus = "5f211c19c9518f4404e03c2e";
+            await client.save();
+        }
+        return res.status(201).send(client);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
 router.post("/updateClientCB", async (req, res) => {
     try {
         var i = 0
