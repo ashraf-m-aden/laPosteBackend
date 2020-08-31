@@ -18,14 +18,6 @@ const clientSchema = new mongoose.Schema({
     email: {
         type: String,
         // required: true,
-        trim: true,
-        lowerCase: true,
-        unique: true, // le faire au tout debut sinn il faudra supprimer toute la base pour que cela fonctionne
-        validate(value) {
-            if (!validator.isEmail(value)) {
-                throw new Error('L\'email est invalide')
-            }
-        }
     },
 
     enabled: {

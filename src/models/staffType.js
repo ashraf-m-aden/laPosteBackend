@@ -16,6 +16,14 @@ const staffTypeSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isAgent: {
+        type: Boolean,
+        default: false
+    },
+    isVisiteur: {
+        type: Boolean,
+        default: false
+    },
     enabled: {
         type: Boolean,
         default: true

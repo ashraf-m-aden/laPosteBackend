@@ -87,13 +87,14 @@ router.post("/clients", async (req, res) => {
 });
 
 router.post("/modifyClient/:id", auth, async (req, res) => {
+    try {
     const client = await Client.findById({ _id: req.params.id });
     const cb = await CB.findOne({ idClient: req.params.id })
     const clientType = await CT.findById({ _id: req.body.idClientType })
     if (!client || !cb || !clientType) {
         return res.status(404).send("Le client n'existe pas");
     }
-    try {
+
         client.name = req.body.name;
         client.email = req.body.email;
         client.number = req.body.number;
@@ -106,7 +107,7 @@ router.post("/modifyClient/:id", auth, async (req, res) => {
 
         return res.send({ cb, client });
     } catch (error) {
-        res.status(500).send("Une erreur est survenue, veuillez recommencer.");
+        res.status(500).send(error);
     }
 });
 
