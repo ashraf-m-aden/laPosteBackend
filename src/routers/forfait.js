@@ -29,6 +29,17 @@ router.post('/historicForfait', auth, async (req, res) => { //creer un forfait
         return res.status(500).send(error)
     }
 })
+router.post('/clientForfait/:id', auth, async (req, res) => { //creer un forfait
+
+    try {
+        const hf = await HistoriqueF.findOne({idClient: req.params.id})
+        hf.forfaits = req.body
+        await hf.save()
+        return res.status(201).send(hf)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
 router.post('/forfaits', auth, async (req, res) => { //creer les forfait
     const payes = await Paye.find({})
     const impayes = await Imp.find({})
@@ -138,7 +149,7 @@ router.get('/clientForfait/:id', auth, async (req, res) => {
         //         }
         //     });
         // });
-        return res.status(201).send(hf)
+        return res.status(201).send(hf.forfaits)
     } catch (error) {
         return res.status(404).send(error)
     }

@@ -12,6 +12,7 @@ const staffT = require("./routers/staffType")
 const historicPys = require("./routers/historiquePaiements")
 const operations = require("./routers/operations")
 const clientBoites = require("./routers/clientBoites")
+const historicDeletion = require("./routers/historicDeletion")
 const cluster = require ('cluster')
 
 let workers = [];
@@ -39,6 +40,7 @@ app.use(staffT)
 app.use(historicPys)
 app.use(operations)
 app.use(clientBoites)
+app.use(historicDeletion)
 
 
 const setupWorkerProcesses = () => {

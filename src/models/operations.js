@@ -8,6 +8,10 @@ const operationSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Why no values? Always provide values!'],
     },
+    isForfait: {
+        type: Boolean,
+        default: false
+    },
     enabled: {
         type: Boolean,
         default: true

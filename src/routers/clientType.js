@@ -28,6 +28,12 @@ router.post('/clientTs', async (req, res) => {
 
                 },
                 {
+                    idOperation: "5f367430336de80e1092d136",
+                    price: 10000,
+                    name: "Changement de statut"
+
+                },
+                {
                     idOperation: "5f367648336de80e1092d137",
                     price: 1500,
                     name: "Nouvelle clé A"
