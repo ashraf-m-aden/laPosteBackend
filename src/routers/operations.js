@@ -27,11 +27,22 @@ router.post('/historicOperation', async (req, res) => { //enregistrer une operat
         return res.status(404).send(error)
     }
 })
+router.post('/deleteOp/:id', async (req, res) => { //enregistrer une operation
+
+    try {
+        const operation = await HO.findById({_id:req.params.id})
+        operation.enabled = false;
+        await operation.save()
+        return res.status(201).send(operation)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
 
 router.get('/operations/:id', async (req, res) => { //recuperer les operation d'un client
 
     try {
-        const operations = await HO.find({ idClient: req.params.id })
+        const operations = await HO.find({ idClient: req.params.id, enabled: true })
         if (!operations) {
             res.status(200).send({ operations: [] })
         }
@@ -42,10 +53,10 @@ router.get('/operations/:id', async (req, res) => { //recuperer les operation d'
     }
 })
 
-router.get('/operation/:id', async (req, res) => { // recuperer un forfait
+router.get('/operation/:id', async (req, res) => { // recuperer une operation
 
     try {
-        const operation = await HO.findById({ _id: req.params.id })
+        const operation = await HO.findById({ _id: req.params.id, enabled: true })
         if (!operation) {
             res.status(200).send({ operations: [] })
         }
@@ -59,7 +70,7 @@ router.get('/operation/:id', async (req, res) => { // recuperer un forfait
 router.get('/allOperations', async (req, res) => { // recuperer un forfait
 
     try {
-        const operations = await HO.find({})
+        const operations = await HO.find({enabled: true})
         if (!operations) {
             res.status(200).send({ operations: [] })
         }

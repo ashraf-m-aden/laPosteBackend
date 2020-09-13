@@ -9,6 +9,7 @@ const historicOperationchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        
         operations: [
             {
                 idOperation: {
@@ -44,6 +45,10 @@ const historicOperationchema = new mongoose.Schema(
         },
         total: {
             type: Number,
+        },
+        isForfait: {
+            type: Boolean,
+            default: false,
         },
         enabled: {
             type: Boolean,

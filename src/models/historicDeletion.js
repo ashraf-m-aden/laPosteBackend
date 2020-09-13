@@ -9,19 +9,19 @@ const historicDeleteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     global_idOperation: {
       type: mongoose.Schema.Types.ObjectId,
     },
-    idOperation: {
-        type: mongoose.Schema.Types.ObjectId,
-      },
-    price: {
-      type: Number,
-    },
-    name: {
-      type: String,
-    },
+    operations:[
+      {
+        price: {
+          type: Number,
+        },
+        name: {
+          type: String,
+        },
+      }
+    ],
 
     idPayment: {
       type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +45,21 @@ const historicDeleteSchema = new mongoose.Schema(
     staffName: {
       type: String,
     },
+    typeDeletion: {
+      type: String,
+    },
+    isForfait: {
+      type: Boolean,
+      default: false,
+    },
+    isOperation: {
+      type: Boolean,
+      default: false,
+    },
+    isRedevance: {
+      type: Boolean,
+      default: false,
+    },
     enabled: {
       type: Boolean,
       default: true,
@@ -55,6 +70,6 @@ const historicDeleteSchema = new mongoose.Schema(
   }
 );
 
-const HD = mongoose.model(" historicDeletes", historicDeleteSchema);
+const HD = mongoose.model("historicDeletes", historicDeleteSchema);
 
 module.exports = HD;
