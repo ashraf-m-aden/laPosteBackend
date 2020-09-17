@@ -45,12 +45,6 @@ router.post('/clientTs', async (req, res) => {
                     name: "Nouvelle clé B1"
 
                 },
-                {
-                    idOperation: "5f36765d336de80e1092d139",
-                    price: 0,
-                    name: "Nouvelle clé B2"
-
-                },
 
             ]
             await clients.save()

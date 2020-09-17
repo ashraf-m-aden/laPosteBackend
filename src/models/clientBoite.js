@@ -45,7 +45,7 @@ const clientBoiteSchema = new mongoose.Schema({
         default: true
     },
     startDate: {
-        type: Number,
+        type: String,
         //required: true
     },
     releaseDate: {
