@@ -7,7 +7,7 @@ const CLIENTYPE = require('../models/clientType')
 const BOITE = require('../models/boite')
 const BOITETYPE = require('../models/boiteType')
 const auth = require('../middleware/auth')
-
+const ALLH = require('../models/allhistorics')
 router.post("/clientBoite", auth, async (req, res) => {
     const clientBoite = await new CB(req.body);
     try {
@@ -25,7 +25,7 @@ router.post("/clientBoite", auth, async (req, res) => {
 router.get("/clientBoites", async (req, res) => {
     // get All clientboite
     try {
-        const clients = await CB.find({ status: ['A jour', 'En retard'] });
+        const clients = await CB.find({ status: ['A jour', 'En retard', 'Exoneré'] });
         if (!clients) {
             return res.status(404).send("Pas de clients");
         }
@@ -107,7 +107,33 @@ router.get("/clientBoite/:id", async (req, res) => {
 
 router.post("/updateClientBoite/:id", async (req, res) => {
     try {
-        const hps = await HP.find({ idClient: req.params.id });
+        const clients = await CB.find({});
+        clients.forEach(async client => {
+            if (client.startDate === "2020") {
+                client.status = "A jour";
+                client.bg = "background:green";
+                client.idStatus = "5f211bafc9518f4404e03c2c";
+                await client.save();
+            } else if (parseInt(client.startDate) >= 2018 && parseInt(client.startDate) < 2020) {
+                client.status = "En retard";
+                client.bg = "background:yellow";
+                client.idStatus = "5f211bd5c9518f4404e03c2d";
+                await client.save();
+            } else {
+                client.status = "Resilié";
+                client.bg = "background:red";
+                client.idStatus = "5f211c19c9518f4404e03c2e";
+                await client.save();
+            }
+        });
+        return res.status(201).send(client);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
+router.post("/checkClientBoite", async (req, res) => {
+    try {
         const client = await CB.findOne({ idClient: req.params.id });
         await hps.sort((a, b) => {
             if (a.date < b.date) {
@@ -135,92 +161,6 @@ router.post("/updateClientBoite/:id", async (req, res) => {
             client.idStatus = "5f211c19c9518f4404e03c2e";
             await client.save();
         }
-        return res.status(201).send(client);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-});
-
-router.post("/checkClientBoite", async (req, res) => {
-    try {
-        const imps = await IMP.find({});
-        await imps.forEach(async imp => {
-            const cb = await CB.findOne({ clientName: imp.clientName, boiteNumber: imp.NBP })
-            if (cb) {
-                //    if (date - hps[0].date === 0) {
-                cb.status = "A jour";
-                cb.bg = "background:green";
-                cb.idStatus = "5f211bafc9518f4404e03c2c";
-                //        await client.save();
-                //    } else if (date - hps[0].date >= 1 && date - hps[0].date < 4) {
-                // cb.status = "En retard";
-                // cb.bg = "background:yellow";
-                // cb.idStatus = "5f211bd5c9518f4404e03c2d";
-                //        await client.save();
-                //    } else {
-                // cb.status = "Resilié";
-                // cb.bg = "background:red";
-                // cb.idStatus = "5f211c19c9518f4404e03c2e";
-                // cb.startDate = imp.Rdv
-                await cb.save();
-
-            }
-            else {
-                const client = await new CB()
-                client.boiteNumber = imp.NBP
-                client.clientName = imp.clientName
-                client.status = "A jour";
-                client.bg = "background:green";
-                client.idStatus = "5f211bafc9518f4404e03c2c";
-                client.startDate = imp.Rdv
-                client.NA = false
-                const boite = await BOITE.findOne({ number: imp.NBP })
-                if (boite) {
-                    client.idBoite = boite._id
-                    const cl = await CLIENT.findOne({ name: imp.clientName })
-                    if (cl) {
-                        if (cl.clientType === "IND") {
-                            if (imp.Cat.toLowerCase() === "mo") {
-                                client.boiteType = "Moyenne"
-                                client.idBoiteType = "5f17e01b37824a17b83d07a7"
-                            }
-                            if (imp.Cat.toLowerCase() === "pe") {
-
-                                client.boiteType = "Petite"
-                                client.idBoiteType = "5f17e01437824a17b83d07a6"
-                            }
-
-                        }
-                        else {
-                            if (imp.Cat.toLowerCase() === "mo") {
-
-                                client.boiteType = "Moyenne"
-                                client.idBoiteType = "5f317a650f5f5b445cf1379c"
-                                await cb.save()
-                            }
-                            if (imp.Cat.toLowerCase() === "gr") {
-                                client.boiteType = "Grande"
-                                client.idBoiteType = "5f17e00d37824a17b83d07a5"
-                                await cb.save()
-                            }
-                        }
-                        const cts = await CLIENTYPE.find({})
-                        await cts.forEach(element => {
-                            if (element.name.toLowerCase() === imp.Cat.toLowerCase()) {
-                                client.clientType = element.name
-                                client.idClientType = element._id
-                            }
-                        });
-                        await client.save()
-                    } else {
-                        console.log(imp);
-                    }
-                } else {
-                    console.log(imp);
-                }
-
-            }
-        });
 
 
         return res.status(201).send({ message: 'c\'est bon' });
@@ -229,4 +169,55 @@ router.post("/checkClientBoite", async (req, res) => {
     }
 });
 
+
+router.post('/checkAllClientBoites', async (req, res) => { // pour mettre le status des client boites
+    try {
+        const cbs = await CB.find({})
+        await cbs.forEach(async cb => {
+            const actual = await ALLH.findOne({ clientName: cb.clientName, Rdv: cb.startDate, NBP: cb.boiteNumber })
+
+            if (parseInt(cb.startDate) === 2020) {
+                cb.status = "A jour";
+                cb.bg = "background:green";
+                cb.idStatus = "5f211bafc9518f4404e03c2c";
+                await cb.save();
+            } else if (parseInt(cb.startDate) >= 2018 && parseInt(cb.startDate) < 2020) {
+                cb.status = "En retard";
+                cb.bg = "background:yellow";
+                cb.idStatus = "5f211bd5c9518f4404e03c2d";
+                await cb.save();
+
+            } else {
+                cb.status = "Resilié";
+                cb.bg = "background:red";
+                cb.idStatus = "5f211c19c9518f4404e03c2e";
+                await cb.save();
+            }
+        });
+        return res.status(200).send()
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
+
+
+router.post('/checkExonerer', async (req, res) => { // pour mettre le status exonerer des client boites
+    try {
+        const actuals = await ALLH.find({ Etat: "EX" })
+        await actuals.forEach(async actual => {
+            const cb = await CB.findOne({ clientName: actual.clientName, startDate: actual.Rdv, boiteNumber: actual.NBP })
+            if (cb) {
+                console.log(actual.NBP);
+                cb.status = "Exoneré";
+                cb.bg = "background:#1d918b";
+                cb.idStatus = "5f65be8d5b8c2632989df0dc";
+                await cb.save();
+            }
+
+        });
+        return res.status(200).send()
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+})
 module.exports = router

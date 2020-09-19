@@ -21,7 +21,7 @@ router.post("/client", auth, async (req, res) => {
   }
 });
 
-router.post("/allClients", async (req, res) => {
+router.post("/allClients", async (req, res) => { // c'est pour mettre tous les clients, remplacer par la troisiemme
   const actuals = await ALLH.find({});
   try {
     actuals.forEach(async (actual) => {
@@ -58,74 +58,153 @@ router.post("/allClients", async (req, res) => {
   }
 });
 
-router.post("/clients", async (req, res) => {
+
+router.post("/fixClients", async (req, res) => { // pour corriger ce qui manque de la fonction suivante
+  const cbs = await CB.find({})
+  var i = 0
+  await cbs.forEach(async (cb) => {
+    const client = await Client.findById({ _id: cb.idClient })
+    const actual = await ALLH.findOne({ clientName: cb.clientName, Rdv: cb.startDate, NBP: cb.boiteNumber })
+    const cat = actual.Cat
+    if (client.clientType === "IND") {
+      if (cat.toLowerCase() === "gr") {
+        cb.boiteType = "Grande";
+        cb.idBoiteType = "5f17e00d37824a17b83d07a5";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "bl") {
+        cb.boiteType = "BL";
+        cb.idBoiteType = "5f17f0323cc901299856629e";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "mo") {
+        cb.boiteType = "Moyenne";
+        cb.idBoiteType = "5f17e01b37824a17b83d07a7";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "pe") {
+        console.log(cat);
+        cb.boiteType = "Petite";
+        cb.idBoiteType = "5f17e01437824a17b83d07a6";
+        await cb.save();
+      }
+    } else {
+      if (cat.toLowerCase() === "pe") {
+        console.log(cat);
+        cb.boiteType = "Petite";
+        cb.idBoiteType = "5f17e01437824a17b83d07a6";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "bl") {
+        cb.boiteType = "BL";
+        cb.idBoiteType = "5f17f0323cc901299856629e";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "mo") {
+        cb.boiteType = "Moyenne";
+        cb.idBoiteType = "5f317a650f5f5b445cf1379c";
+        await cb.save();
+      }
+      if (cat.toLowerCase() === "gr") {
+        cb.boiteType = "Grande";
+        cb.idBoiteType = "5f17e00d37824a17b83d07a5";
+        await cb.save();
+      }
+    }
+  });
+  res.send({ cnt: cbs.length })
+});
+router.post("/clients", async (req, res) => { // c'est pour mettre les clients pui les client boites
   const actuals = await ALLH.find({});
 
   try {
     var i = 0;
     await actuals.forEach(async (actual) => {
       const boite = await Boites.findOne({ number: actual.NBP });
-      const client = await Client.findOne({ name: actual.clientName });
-      if (client) {
-        if (boite) {
-          var cb = await new CB();
-          cb.idBoite = boite._id;
-          cb.boiteNumber = boite.number;
-          cb.clientName = client.name;
-          cb.idClient = client._id;
-          cb.idClientType = client.idClientType;
-          cb.clientType = client.clientType;
-          cb.startDate = actual.Rdv;
+      //    const client = await Client.findOne({ name: actual.clientName });
+      //    const clientb = await CB.findOne({ idClient: client._id })
+      if (boite) {
+        var client = {
+          name: actual.clientName,
+        };
+        if (actual.Type.toLowerCase() === "ind") {
+          (client.idClientType = "5f167fae24124d1b60b897a9"), (client.clientType = "IND");
+        }
+        if (actual.Type.toLowerCase() === "org") {
+          (client.idClientType = "5f167fc224124d1b60b897aa"), (client.clientType = "ORG");
+        }
+        if (actual.Type.toLowerCase() === "cd") {
+          (client.idClientType = "5f16808724124d1b60b897ab"), (client.clientType = "CD");
+        }
+        if (actual.Type.toLowerCase() === "spr") {
+          (client.idClientType = "5f1680ab24124d1b60b897ac"), (client.clientType = "SPR");
+        }
+        if (actual.Type.toLowerCase() === "spp") {
+          (client.idClientType = "5f1680fb24124d1b60b897ad"), (client.clientType = "SPP");
+        }
+        if (actual.Type.toLowerCase() === "ass") {
+          (client.idClientType = "5f16818424124d1b60b897af"), (client.clientType = "ASS");
+        }
+        if (actual.Type.toLowerCase() === "adm") {
+          (client.idClientType = "5f17eac1b6b339333ca259b7"), (client.clientType = "ADM");
+        }
+        const new_client = await new Client(client)
+        await new_client.save()
+        var cb = await new CB();
+        cb.idBoite = boite._id;
+        cb.boiteNumber = boite.number;
+        cb.clientName = new_client.name;
+        cb.idClient = new_client._id;
+        cb.idClientType = new_client.idClientType;
+        cb.clientType = new_client.clientType;
+        cb.startDate = actual.Rdv;
+        await cb.save();
+        if (parseInt(actual.Rdv) === 2020) {
+          cb.status = "A jour";
+          cb.bg = "background:green";
+          cb.idStatus = "5f211bafc9518f4404e03c2c";
           await cb.save();
-          if (parseInt(actual.Rdv) === "2020") {
-            cb.status = "A jour";
-            cb.bg = "background:green";
-            cb.idStatus = "5f211bafc9518f4404e03c2c";
-            await cb.save();
 
-          } else if (parseInt(actual.Rdv)  >= 2018 && parseInt(actual.Rdv) < 2020) {
-            cb.status = "En retard";
-            cb.bg = "background:yellow";
-            cb.idStatus = "5f211bd5c9518f4404e03c2d";
-            await cb.save();
+        } else if (parseInt(actual.Rdv) >= 2018 && parseInt(actual.Rdv) < 2020) {
+          cb.status = "En retard";
+          cb.bg = "background:yellow";
+          cb.idStatus = "5f211bd5c9518f4404e03c2d";
+          await cb.save();
 
-          } else {
-            cb.status = "Resilié";
-            cb.bg = "background:red";
-            cb.idStatus = "5f211c19c9518f4404e03c2e";
-            await cb.save();
+        } else {
+          cb.status = "Resilié";
+          cb.bg = "background:red";
+          cb.idStatus = "5f211c19c9518f4404e03c2e";
+          await cb.save();
 
+        }
+        if (client.clientType === "IND") {
+          if (actual.Cat.toLowerCase() === "mo") {
+            cb.boiteType = "Moyenne";
+            cb.idBoiteType = "5f17e01b37824a17b83d07a7";
+            await cb.save();
           }
-          if (client.clientType === "IND") {
-            if (actual.Cat.toLowerCase() === "mo") {
-              cb.boiteType = "Moyenne";
-              cb.idBoiteType = "5f17e01b37824a17b83d07a7";
-              await cb.save();
-            }
-            if (actual.Cat.toLowerCase() === "pe") {
-              cb.boiteType = "Petite";
-              cb.idBoiteType = "5f17e01437824a17b83d07a6";
-              await cb.save();
-            }
-          } else {
-            if (actual.Cat.toLowerCase() === "mo") {
-              cb.boiteType = "Moyenne";
-              cb.idBoiteType = "5f317a650f5f5b445cf1379c";
-              await cb.save();
-            }
-            if (actual.Cat.toLowerCase() === "gr") {
-              cb.boiteType = "Grande";
-              cb.idBoiteType = "5f17e00d37824a17b83d07a5";
-              await cb.save();
-            }
+          if (actual.Cat.toLowerCase() === "pe") {
+            cb.boiteType = "Petite";
+            cb.idBoiteType = "5f17e01437824a17b83d07a6";
+            await cb.save();
           }
         } else {
-            console.log("la boite "+actual.NBP);
+          if (actual.Cat.toLowerCase() === "mo") {
+            cb.boiteType = "Moyenne";
+            cb.idBoiteType = "5f317a650f5f5b445cf1379c";
+            await cb.save();
+          }
+          if (actual.Cat.toLowerCase() === "gr") {
+            cb.boiteType = "Grande";
+            cb.idBoiteType = "5f17e00d37824a17b83d07a5";
+            await cb.save();
+          }
         }
       } else {
-        console.log("le client "+actual.clientName);
-
+        console.log("la boite " + actual.NBP);
       }
+
     });
     return await res.status(201).send();
   } catch (error) {

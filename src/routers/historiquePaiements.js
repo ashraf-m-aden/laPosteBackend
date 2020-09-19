@@ -7,6 +7,8 @@ const Clientb = require('../models/clientBoite')
 const HF = require('../models/historiqueForfait')
 const auth = require('../middleware/auth')
 const Forfaits = require('../models/forfait')
+const ALLH = require('../models/allhistorics')
+const BOITETYPES = require('../models/boiteType')
 
 router.post('/historicP', auth, async (req, res) => {
     try {
@@ -18,11 +20,43 @@ router.post('/historicP', auth, async (req, res) => {
     }
 })
 
-router.post('/historicPs', auth, async (req, res) => {
+router.post('/historicPs', async (req, res) => {
     try {
-        const hp = await new HistoricP(req.body)
-        await hp.save()
-        return res.status(201).send(hp)
+        const clientboites = await Clientb.find({})
+        const forfaits = await Forfaits.find({})
+        clientboites.forEach(async cb => {
+            const boiteTypes = await BOITETYPES.findById({ _id: cb.idBoiteType })
+            const hf = await HF.findOne({ idClient: cb.idClient })
+            if (boiteTypes && hf) {
+                var nh = await new HistoricP()
+                nh.boiteNumber = cb.boiteNumber
+                nh.clientName = cb.clientName
+                nh.idBoite = cb.idBoite
+                nh.idClient = cb.idClient
+                nh.date = cb.startDate
+                nh.total = boiteTypes.price
+                nh.priceBoite = boiteTypes.price
+                nh.forfaits = []
+                nh.idStaff = "5f2006317c3b1a2d843b36d4"
+                await hf.forfaits.forEach(async forfait => {
+                    await forfaits.forEach(element => {
+                        if (forfait.idForfait === element._id) {
+                            nh.total += element.price
+                            nh.forfaits.push({
+                                idForfait: element._id,
+                                price: element.price,
+                                name: element.name
+                            })
+                        }
+                    });
+                });
+                await nh.save()
+            } else {
+                console.log(cb._id);
+            }
+
+        });
+        return res.status(201).send()
     } catch (error) {
         return res.status(500).send(error)
     }
@@ -79,7 +113,7 @@ router.get('/payment/:id', async (req, res) => { // info sur un paiement precis
     }
 })
 
-router.post('/removePayment/:id',auth, async (req, res) => { //
+router.post('/removePayment/:id', auth, async (req, res) => { //
     try {
         const historic = await HistoricP.findById({ _id: req.params.id })
         if (!historic) {
@@ -102,9 +136,9 @@ router.post('/changePayment', async (req, res) => {
     try {
         const hps = await HistoricP.find({})
         await hps.forEach(async hp => {
-          hp.enabled= true
-          hp.toModify = false;
-          hp.toDelete = false
+            hp.enabled = true
+            hp.toModify = false;
+            hp.toDelete = false
             await hp.save()
         });
         await hps.forEach(async hp => {

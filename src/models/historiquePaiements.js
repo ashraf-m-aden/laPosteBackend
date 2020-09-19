@@ -36,7 +36,13 @@ const historicPSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
+    payment_type: {
+        type: String,
+        default: "Espèces"
+    },
+    payment_number: {
+        type: String
+    },
     idStaff: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
@@ -45,19 +51,15 @@ const historicPSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    toModify: {
-        type: Boolean,
-        default: false
-    },
-    toDelete: {
-        type: Boolean,
-        default: false
-    },
     date: {
-        type: Number,
+        type: String,
         //required: true
     },
     total: {
+        type: Number,
+        //required: true
+    },
+    total_redevance: {
         type: Number,
         //required: true
     },

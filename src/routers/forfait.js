@@ -8,6 +8,7 @@ const Paye = require('../models/payes')
 const Imp = require('../models/impayes')
 const Retard = require('../models/retard')
 const ClientType = require('../models/clientType')
+const ALLH = require('../models/allhistorics')
 router.post('/forfait', async (req, res) => { //creer un forfait
 
     try {
@@ -32,7 +33,7 @@ router.post('/historicForfait', auth, async (req, res) => { //creer un forfait
 router.post('/clientForfait/:id', auth, async (req, res) => { //creer un forfait
 
     try {
-        const hf = await HistoriqueF.findOne({idClient: req.params.id})
+        const hf = await HistoriqueF.findOne({ idClient: req.params.id })
         hf.forfaits = req.body
         await hf.save()
         return res.status(201).send(hf)
@@ -40,42 +41,13 @@ router.post('/clientForfait/:id', auth, async (req, res) => { //creer un forfait
         return res.status(500).send(error)
     }
 })
-router.post('/forfaits', auth, async (req, res) => { //creer les forfait
-    const payes = await Paye.find({})
-    const impayes = await Imp.find({})
-    const retards = await Retard.find({})
+router.post('/forfaits', async (req, res) => { //creer les forfait
+
     const clientb = await Clientboite.find({})
+    const retards = await ALLH.find({})
     try {
         clientb.forEach(async element => {
             const forfait = await new HistoriqueF()
-            await payes.forEach(paye => {
-                if (element.clientName == paye.clientName) {
-                    if (paye.DOMICILE !== "NULL") {
-                        forfait.forfaits.push({
-                            idForfait: "5f17def8d3194c205c55612d"
-                        })
-                    }
-                    if (paye.SC !== "NULL") {
-                        forfait.forfaits.push({
-                            idForfait: "5f17df35d3194c205c556131"
-                        })
-                    }
-                }
-            });
-            await impayes.forEach(async paye => {
-                if (element.clientName == paye.clientName) {
-                    if (paye.DOMICILE !== "NULL") {
-                        forfait.forfaits.push({
-                            idForfait: "5f17def8d3194c205c55612d"
-                        })
-                    }
-                    if (paye.SC !== "NULL") {
-                        forfait.forfaits.push({
-                            idForfait: "5f17df35d3194c205c556131"
-                        })
-                    }
-                }
-            });
             await retards.forEach(async paye => {
                 if (element.clientName == paye.clientName) {
                     if (paye.DOMICILE !== "NULL") {
@@ -92,7 +64,7 @@ router.post('/forfaits', auth, async (req, res) => { //creer les forfait
             });
             forfait.idClient = element.idClient
             forfait.idBoite = element.idBoite
-            forfait.idStaff = req.staff._id
+            // forfait.idStaff = req.staff._id   je ne vois pas pkw on a besoin de cette donnée
             await forfait.save()
 
         });

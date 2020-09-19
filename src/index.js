@@ -13,7 +13,7 @@ const historicPys = require("./routers/historiquePaiements")
 const operations = require("./routers/operations")
 const clientBoites = require("./routers/clientBoites")
 const historicDeletion = require("./routers/historicDeletion")
-const cluster = require ('cluster')
+const cluster = require('cluster')
 
 let workers = [];
 
@@ -50,44 +50,44 @@ const setupWorkerProcesses = () => {
 
   // iterate on number of cores need to be utilized by an application
   // current example will utilize all of them
-  for(let i = 0; i < numCores; i++) {
-      // creating workers and pushing reference in an array
-      // these references can be used to receive messages from workers
-      workers.push(cluster.fork());
+  for (let i = 0; i < numCores; i++) {
+    // creating workers and pushing reference in an array
+    // these references can be used to receive messages from workers
+    workers.push(cluster.fork());
 
-      // to receive messages from worker process
-      workers[i].on('message', function(message) {
-          console.log(message);
-      });
+    // to receive messages from worker process
+    workers[i].on('message', function (message) {
+      console.log(message);
+    });
   }
 
   // process is clustered on a core and process id is assigned
-  cluster.on('online', function(worker) {
-      console.log('Worker ' + worker.process.pid + ' is listening');
+  cluster.on('online', function (worker) {
+    //  console.log('Worker ' + worker.process.pid + ' is listening');
   });
 
   // if any of the worker process dies then start a new one by simply forking another one
-  cluster.on('exit', function(worker, code, signal) {
-      console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
-      console.log('Starting a new worker');
-      cluster.fork();
-      workers.push(cluster.fork());
-      // to receive messages from worker process
-      workers[workers.length-1].on('message', function(message) {
-          console.log(message);
-      });
+  cluster.on('exit', function (worker, code, signal) {
+    console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+    console.log('Starting a new worker');
+    cluster.fork();
+    workers.push(cluster.fork());
+    // to receive messages from worker process
+    workers[workers.length - 1].on('message', function (message) {
+      console.log(message);
+    });
   });
 };
-const startServer = ()=> {
+const startServer = () => {
   app.listen(port, () => {
-    console.log('Server is up on port ' + port);
+    //  console.log('Server is up on port ' + port);
   })
 }
 
-   // if it is a master process then call setting up worker process
-   if(cluster.isMaster) {
-    setupWorkerProcesses();
+// if it is a master process then call setting up worker process
+if (cluster.isMaster) {
+  setupWorkerProcesses();
 } else {
-    // to setup server configurations and share port address for incoming requests
-    startServer();
+  // to setup server configurations and share port address for incoming requests
+  startServer();
 }

@@ -9,13 +9,15 @@ const hfSchema = new mongoose.Schema({
         idForfait: {
             type: mongoose.Schema.Types.ObjectId,
             required: true
+        },
+        price: {
+            type: String
+        },
+        name: {
+            type: String
         }
     }],
     idBoite: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
-    idStaff: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
