@@ -1,11 +1,11 @@
 const express = require("express")
 const router = new express.Router()
-const BoiteType = require("../models/boiteType")
+const BOITETYPE = require("../models/boiteType")
 const auth = require('../middleware/auth')
 router.post('/boiteT',auth, async (req, res) => {
     
     try {
-        const boiteT = new BoiteType(req.body)
+        const boiteT = new BOITETYPE(req.body)
         await boiteT.save()
         return res.status(201).send(boiteT)
     } catch (error) {
@@ -15,7 +15,7 @@ router.post('/boiteT',auth, async (req, res) => {
 router.post('/boiteT/:id',auth, async (req, res) => {
     
     try {
-        const boiteT = boiteType.findById({_id:req.id})
+        const boiteT = BOITETYPE.findById({_id:req.id})
         boiteT.type = req.body.type
         boiteT.description = req.body.description
         boiteT.price = req.body.price
@@ -29,7 +29,7 @@ router.post('/boiteT/:id',auth, async (req, res) => {
 router.get('/boiteT',auth, async (req, res) => {
     
     try {
-        const boiteTs = await BoiteType.find({})
+        const boiteTs = await BOITETYPE.find({})
         return res.status(201).send(boiteTs)
     } catch (error) {
         return res.status(404).send(error)
@@ -39,7 +39,7 @@ router.get('/boiteT',auth, async (req, res) => {
 router.get('/oneBoiteT/:id',auth, async (req, res) => {
     
     try {
-        const boiteT = await BoiteType.findById({_id:req.params.id})
+        const boiteT = await BOITETYPE.findById({_id:req.params.id})
         return res.status(201).send(boiteT)
     } catch (error) {
         return res.status(404).send(error)

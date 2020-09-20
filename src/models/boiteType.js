@@ -21,6 +21,6 @@ const boiteTypeSchema = new mongoose.Schema({
 {timestamps: true})
 
 
-const BoiteType = mongoose.model('BoiteType', boiteTypeSchema)
+const BoiteType = mongoose.model('boitetypes', boiteTypeSchema)
 
 module.exports = BoiteType
