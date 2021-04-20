@@ -19,20 +19,20 @@ let workers = [];
 
 const app = express()
 const port = process.env.PORT || 3000
-app.use(function (req, res, next) {
+// app.use(function (req, res, next) {
 
-  res.setHeader('Access-Control-Allow-Origin', 'https://lapostededj.web.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With,x-requested-width, Authorization,  Content-Type, Accept");
-  res.setHeader('Access-Control-Allow-Credentials', true);
+//   res.setHeader('Access-Control-Allow-Origin', 'https://lapostededj.web.app');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With,x-requested-width, Authorization,  Content-Type, Accept");
+//   res.setHeader('Access-Control-Allow-Credentials', true);
 
-  next();
-});
+//   next();
+// });
 const imagesPath = path.join(__dirname, '../images')
 // const configcORS = {
 //   'origin': '*'
 // }
-// app.use(cors(configcORS))
+app.use(cors(configcORS))
 
 app.use('/images', express.static(imagesPath))
 app.use(express.json())
