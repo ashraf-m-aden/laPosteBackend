@@ -9,11 +9,16 @@ const auth = require('../middleware/auth')
 const Forfaits = require('../models/forfait')
 const ALLH = require('../models/allhistorics')
 const BOITETYPES = require('../models/boiteType')
-
+const CB = require('../models/clientBoite')
 router.post('/historicP', auth, async (req, res) => {
     try {
         const hp = await new HistoricP(req.body)
         await hp.save()
+        const cb  = await CB.findOne({idClient: hp.idClient})
+        if (parseInt(cb.startDate) < (new Date().getFullYear())) {
+            cb.NA = false;
+            cb.save()
+        }
         return res.status(201).send(hp)
     } catch (error) {
         return res.status(500).send(error)

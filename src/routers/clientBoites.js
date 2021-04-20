@@ -7,7 +7,8 @@ const CLIENTYPE = require('../models/clientType')
 const BOITE = require('../models/boite')
 const BOITETYPE = require('../models/boiteType')
 const auth = require('../middleware/auth')
-const ALLH = require('../models/allhistorics')
+const ALLH = require('../models/allhistorics');
+const HistoricP = require("../models/historiquePaiements");
 router.post("/clientBoite", auth, async (req, res) => {
     const clientBoite = await new CB(req.body);
     try {
@@ -132,9 +133,10 @@ router.post("/updateClientBoite/:id", async (req, res) => {
     }
 });
 
-router.post("/checkClientBoite", async (req, res) => {
+router.post("/checkClientBoite/:id", async (req, res) => {
     try {
         const client = await CB.findOne({ idClient: req.params.id });
+        const hps = await HistoricP.find({ idClient: req.params.id, enabled: true });
         await hps.sort((a, b) => {
             if (a.date < b.date) {
                 return 1;

@@ -36,6 +36,10 @@ const historicPSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    penalite: {
+        type: Number,
+        default: 0
+    },
     payment_type: {
         type: String,
         default: "Espèces"
