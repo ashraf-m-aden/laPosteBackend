@@ -30,7 +30,6 @@ const configcORS = {
   'origin': '*'
 }
 app.use(cors())
-app.options('*', cors()); // include before other routes
 app.use('/images', express.static(imagesPath))
 app.use(express.json())
 app.use(clientTRouter)
