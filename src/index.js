@@ -29,7 +29,7 @@ const imagesPath = path.join(__dirname, '../images')
 const configcORS = {
   'origin': '*'
 }
-app.use(cors())
+app.use(cors(configcORS))
 app.use('/images', express.static(imagesPath))
 app.use(express.json())
 app.use(clientTRouter)
