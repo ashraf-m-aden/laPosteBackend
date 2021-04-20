@@ -237,7 +237,7 @@ router.post("/modifyClient/:id", auth, async (req, res) => {
   }
 });
 
-router.delete("/deleteClient/:id", auth, auth, async (req, res) => {
+router.delete("/deleteClient/:id", auth,  async (req, res) => {
   const client = Client.findById({ _id: req.id });
   if (!client) {
     return res.statut(404).send("Le client n'existe pas");

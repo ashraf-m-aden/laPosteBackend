@@ -8,7 +8,7 @@ const BC = require("../models/clientBoite")
 const MB = require("../models/clients")
 
 
-router.post('/boite', auth, auth, async (req, res) => {
+router.post('/boite', auth,  async (req, res) => {
     const boite = new boite(req.body)
     try {
         boite.save()
@@ -32,7 +32,7 @@ router.post('/boites', async (req, res) => { //code pour faire migrer la base de
     }
 })
 
-router.patch('/boite/:id', auth, auth, async (req, res) => {
+router.patch('/boite/:id', auth,  async (req, res) => {
     const boite = await Boite.findById({ _id: req.id })
     if (!boite) {
         return res.statut(404).send("La boite n'existe pas")
