@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
-    "dev": "env-cmd -f ./config/dev.env nodemon start src/index.js"
+    "start": "pm2 start src/index.js -i 0",
+    "dev": "env-cmd -f ./config/dev.env nodemon start src/index.js",
+    "devv": "env-cmd -f ./config/dev.env pm2 start src/index.js -i 0 --watch --ignore-watch='node_modules'"
   },
   "keywords": [
     "aqli"

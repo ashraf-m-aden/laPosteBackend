@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Admin = require('./admin')
 const staffSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -11,23 +12,32 @@ const staffSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
+    login: {
         type: String,
+        unique: [true, 'Ce login est deja prit'], // le faire au tout debut sinn il faudra supprimer toute la base pour que cela fonctionne
         required: true,
-        trim: true,
-        lowerCase: true,
-        unique: true, // le faire au tout debut sinn il faudra supprimer toute la base pour que cela fonctionne
-        validate(value) {
-            if (!validator.isEmail(value)) {
-                throw new Error('L\'email est invalide')
-            }
-        }
+
+    },
+    position: {
+        type: String
     },
     enabled: {
         type: Boolean,
         default: true
     },
-    idStaffType: {
+    countryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    branchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    role: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
@@ -42,11 +52,14 @@ const staffSchema = new mongoose.Schema({
     { timestamps: true })
 
 // verify credentials, this a function we use on Staff and not on staff
-staffSchema.statics.findByCredentials = async (email, password) => {
-    const staff = await Staff.findOne({ email })
+staffSchema.statics.findByCredentials = async (login, password) => {
+    let staff = await Staff.findOne({ login })
     if (!staff) {
-        throw new Error('Connexion refusée')
-    }
+        staff = await Admin.findOne({ login })
+        if(!staff) {
+            throw new Error('Connexion refusée')
+        }
+    } 
     const isMatch = await bcrypt.compare(password, staff.password)
     if (!isMatch) {
         throw new Error('Connexion refusée')
@@ -54,8 +67,8 @@ staffSchema.statics.findByCredentials = async (email, password) => {
     return staff
 }
 
-staffSchema.statics.isAdmin = async (email, password) => {
-    const staff = await Staff.findOne({ email })
+staffSchema.statics.isAdmin = async (login, password) => {
+    const staff = await Staff.findOne({ login })
     if (!staff) {
         throw new Error('Connexion refusée')
     }
@@ -85,6 +98,9 @@ staffSchema.methods.generateToken = async function () {
     }
 }
 
+staffSchema.methods.drole = async function () {
+    return "drole"
+}
 staffSchema.methods.toJSON = function () {
     const staff = this
     const staffObject = staff.toObject()

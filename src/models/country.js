@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
-const forfaitSchema = new mongoose.Schema({
+const countrySchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Why no values? Always provide values!'],
-    },
-    price: {
-        type: Number,
         required: [true, 'Why no values? Always provide values!'],
     },
     enabled: {
@@ -16,6 +12,6 @@ const forfaitSchema = new mongoose.Schema({
 {timestamps: true})
 
 
-const Forfait = mongoose.model('Forfait', forfaitSchema)
+const COUNTRY = mongoose.model('country', countrySchema)
 
-module.exports = Forfait
+module.exports = COUNTRY

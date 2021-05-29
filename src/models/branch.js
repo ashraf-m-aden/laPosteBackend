@@ -1,18 +1,17 @@
 const mongoose = require('mongoose')
-const boiteTypeSchema = new mongoose.Schema({
+const branchSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Why no values? Always provide values!'],
     },
-    description: {
-        type: String,
+    countryId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Why no values? Always provide values!'],
     },
-    price: {
-        type: Number,
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Why no values? Always provide values!'],
     },
-
     enabled: {
         type: Boolean,
         default: true
@@ -21,6 +20,6 @@ const boiteTypeSchema = new mongoose.Schema({
 {timestamps: true})
 
 
-const BoiteType = mongoose.model('boitetypes', boiteTypeSchema)
+const Branch = mongoose.model('branch', branchSchema)
 
-module.exports = BoiteType
+module.exports = Branch
