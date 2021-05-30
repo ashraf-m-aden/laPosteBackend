@@ -17,6 +17,35 @@ router.post('/transaction', auth, async (req, res) => { //enregistrer une transa
     }
 })
 
+router.post('/transaction/send/time/:id', auth, async (req, res) => { //recuperer les transactions d'une journee pour une branche
+
+    try {
+        const time = req.body
+        const transactions = await Transaction.find({ sendingBranch: req.params.id, time:req.body.time, enabled: true })
+        if (!transactions) {
+            res.status(200).send({ transactions: [] })
+        }
+        res.status(200).send(transactions)
+
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+router.post('/transaction/receive/time/:id', auth, async (req, res) => { //recuperer les transactions d'une journee pour une branche
+
+    try {
+        const time = req.body
+        const transactions = await Transaction.find({ toCountryId: req.params.id, time:req.body.time, enabled: true })
+        if (!transactions) {
+            res.status(200).send({ transactions: [] })
+        }
+        res.status(200).send(transactions)
+
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+
 router.delete('/transaction/:id', auth, async (req, res) => { //supprimer une transaction
 
     try {
@@ -43,10 +72,22 @@ router.get('/transaction/client/:id', auth, async (req, res) => { //recuperer le
     }
 })
 
-router.get('/transaction/:id', auth, async (req, res) => { // recuperer une transaction
-
+router.get('/transaction/:id', auth, async (req, res) => { // recuperer une tra
     try {
         const transaction = await Transaction.findById({ _id: req.params.id, enabled: true })
+        if (!transaction) {
+            res.status(200).send({ transaction: [] })
+        }
+        res.status(200).send(transaction)
+
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
+router.get('/transaction/transfert/:id', auth, async (req, res) => { // recuperer une transaction
+
+    try {
+        const transaction = await Transaction.findById({ branchId: req.params.id, enabled: true })
         if (!transaction) {
             res.status(200).send({ transaction: [] })
         }

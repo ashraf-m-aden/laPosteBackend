@@ -14,6 +14,17 @@ router.post('/branch', async (req, res) => {
         return res.status(404).send(error)
     }
 })
+router.post('/branch/devise/:id', async (req, res) => {
+    
+    try {
+        var branch = await Branch.findById({_id:req.params.id})
+        branch.devises = req.body
+        await branch.save()
+        return res.status(201).send(branch)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
 router.get('/branch', async (req, res) => {
     
     try {
