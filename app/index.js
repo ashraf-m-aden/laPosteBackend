@@ -14,14 +14,17 @@ let workers = [];
 const app = express()
 const port = process.env.PORT || 3000
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://bolt-money-transfert.web.app, http://localhost:4200");
+  res.header("Access-Control-Allow-Origin", ["https://bolt-money-transfert.web.app", "http://localhost:4200"]);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With,x-requested-width, Authorization,  Content-Type, Accept");
   res.header("Access-Control-Allow-Methods", "GET, PATCH, DELETE, POST");
   next();
 });
 const imagesPath = path.join(__dirname, '../images')
 
-
+var corsOptions = {
+  origin: ['http://localhost:4200','https://bolt-money-backend.herokuapp.com']
+}
+app.use(cors(corsOptions))
 app.use('/images', express.static(imagesPath))
 app.use(express.json())
 app.use(country)
