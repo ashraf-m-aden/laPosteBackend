@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    script: 'index.js',
+    script: './index.js',
     watch: '.',
     instances: "max",
     env: {
