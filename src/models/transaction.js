@@ -30,8 +30,9 @@ const transactionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    address: {
+    motifs: {
         type: String,
+        required: true
     },
     amount: {
         type: String,
@@ -48,7 +49,6 @@ const transactionSchema = new mongoose.Schema({
     },
     devise: {
         type: String,
-        required: true
     },
     status: {
         type: Boolean,
@@ -57,6 +57,9 @@ const transactionSchema = new mongoose.Schema({
     staffId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    receiverStaffId: {
+        type: mongoose.Schema.Types.ObjectId,
     },
     modifyingStaffId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -68,15 +71,18 @@ const transactionSchema = new mongoose.Schema({
     staffName: {
         type: String,
     },
+    receiverStaffName: {
+        type: String,
+    },
     receivingreceiptUrl: {
         type: String,
+    },
+    receivingBranch: {
+        type: mongoose.Schema.Types.ObjectId,
     },
     sendingBranch: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
-    },
-    receivingBranch: {
-        type: mongoose.Schema.Types.ObjectId,
     },
     originalTransactionId: {
         type: String,

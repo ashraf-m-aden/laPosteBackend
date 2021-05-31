@@ -16,6 +16,30 @@ router.post('/transaction', auth, async (req, res) => { //enregistrer une transa
         return res.status(404).send(error)
     }
 })
+router.post('/transaction/update', auth, async (req, res) => { //enregistrer une transaction
+
+    try {
+        var transaction = await Transaction.findById({_id: req.body._id})
+        const newTransaction = req.body
+        console.log(newTransaction);
+
+        if (!transaction) {
+            return res.status(404).send({error:'Cette transaction est introuvable'})
+        }
+        transaction.receiverId = newTransaction.receiverId
+        transaction.receiverNumber = newTransaction.receiverNumber
+        transaction.receivingBranch = newTransaction.receivingBranch
+        transaction.receiverStaffId = newTransaction.receiverStaffId
+        transaction.receiverStaffName = newTransaction.receiverStaffName
+        transaction.status = newTransaction.status
+        transaction.modifyingStaffId = newTransaction.modifyingStaffId
+
+        await transaction.save()
+        return res.status(201).send(transaction)
+    } catch (error) {
+        return res.status(404).send(error)
+    }
+})
 
 router.post('/transaction/send/time/:id', auth, async (req, res) => { //recuperer les transactions d'une journee pour une branche
 
