@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
 const imagesPath = path.join(__dirname, '../images')
 
 var corsOptions = {
-  origin: ['http://localhost:4200','https://bolt-money-backend.herokuapp.com']
+  origin: ['http://localhost:4200',process.env.frontend]
 }
 app.use(cors(corsOptions))
 app.use('/images', express.static(imagesPath))
