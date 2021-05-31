@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2-runtime start ecosystem.config.js --env production",
-    "dev": "env-cmd -f ./config/dev.env nodemon start app/index.js",
-    "devv": "env-cmd -f ./config/dev.env pm2 start app/index.js -i 0 --watch --ignore-watch='node_modules'"
+    "start": "env-cmd -f ./config/prod.env pm2-runtime start ecosystem.config.js --env production",
+    "dev": "env-cmd -f ./config/dev.env nodemon start app/index.js"
   },
   "keywords": [
     "aqli"
