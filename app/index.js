@@ -2,11 +2,10 @@ const express = require("express")
 require('./db/mongoose')
 const cors = require("cors")
 const path = require("path")
-const country = require("./routers/country")
-const transaction = require("./routers/transaction")
-const staff = require("./routers/staff")
+const user = require("./routers/user")
 const role = require("./routers/role")
-const company = require("./routers/company")
+const patient = require("./routers/patient")
+const ordonnance = require("./routers/ordonnance")
 const cluster = require('cluster')
 
 let workers = [];
@@ -27,11 +26,10 @@ var corsOptions = {
 app.use(cors(corsOptions))
 app.use('/images', express.static(imagesPath))
 app.use(express.json())
-app.use(country)
-app.use(transaction)
-app.use(staff)
+app.use(user)
 app.use(role)
-app.use(company)
+app.use(patient)
+app.use(ordonnance)
 
 
 const setupWorkerProcesses = () => {

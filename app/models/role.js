@@ -8,10 +8,9 @@ const roleSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     }
-},
-{timestamps: true})
+})
 
 
-const Role = mongoose.model('role', roleSchema)
+const Role = mongoose.model('roles', roleSchema)
 
 module.exports = Role
